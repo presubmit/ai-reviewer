@@ -264,6 +264,8 @@ export const deleteAccount = validatedActionWithUser(
       where: { id: user.id },
       data: {
         email: `${user.email}-deleted`,
+        githubId: null,
+        googleId: null,
         deletedAt: new Date(),
       },
     });

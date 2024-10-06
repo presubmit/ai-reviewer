@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@/lib/auth";
 import { signOut } from "@/app/(login)/actions";
 import { useRouter } from "next/navigation";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,7 +76,10 @@ function Header() {
               asChild
               className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-full"
             >
-              <Link href="/sign-up">Sign Up</Link>
+              <Link href="/auth/github">
+                <GitHubLogoIcon className="mr-2 h-4 w-4" />
+                Log in with Github
+              </Link>
             </Button>
           )}
         </div>

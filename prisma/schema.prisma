@@ -27,17 +27,20 @@ model User {
 }
 
 model Team {
-  id                   String   @id @default(cuid())
-  name                 String   @db.VarChar(100)
-  stripeCustomerId     String?  @unique
-  stripeSubscriptionId String?  @unique
+  id                   String    @id @default(cuid())
+  name                 String    @db.VarChar(100)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
   stripeProductId      String?
-  planName             String?  @db.VarChar(50)
-  subscriptionStatus   String?  @db.VarChar(20)
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @default(now()) @updatedAt
+  planName             String?   @db.VarChar(50)
+  subscriptionStatus   String?   @db.VarChar(20)
+  githubId             String?   @unique
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now()) @updatedAt
+  deletedAt            DateTime?
 
   members      TeamMember[]
+  repositories Repository[]
   activityLogs ActivityLog[]
   invitations  Invitation[]
 }
@@ -50,6 +53,21 @@ model TeamMember {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+}
+
+model Repository {
+  id          String  @id @default(cuid())
+  teamId      String
+  name        String  @db.VarChar(255)
+  fullName    String  @db.VarChar(255)
+  description String?
+  githubId    String  @unique
+  private     Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   team Team @relation(fields: [teamId], references: [id])
 }
 
