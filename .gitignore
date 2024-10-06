@@ -38,3 +38,6 @@ next-env.d.ts
 
 # Docker
 postgres_data/
+
+# Keys
+/keys

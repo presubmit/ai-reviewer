@@ -5,12 +5,17 @@
     "build": "next build",
     "start": "next start",
     "db:setup": "npx tsx lib/db/setup.ts",
-    "db:seed": "npx tsx lib/db/seed.ts",
+    "db:seed": " npx tsx lib/db/seed.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^0.0.51",
+    "@ai-sdk/openai": "^0.0.66",
+    "@octokit/app": "^15.1.0",
+    "@octokit/auth-app": "^7.1.1",
+    "@octokit/rest": "^21.0.2",
     "@prisma/client": "5.20.0",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -25,12 +30,14 @@
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.7",
     "@types/react-dom": "^18.3.0",
+    "ai": "^3.4.9",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "jose": "^5.9.2",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.441.0",
     "next": "15.0.0-canary.152",
     "postcss": "^8.4.47",
@@ -47,6 +54,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "prisma": "^5.20.0"
   }
 }
