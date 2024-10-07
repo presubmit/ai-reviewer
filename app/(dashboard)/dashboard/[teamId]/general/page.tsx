@@ -75,11 +75,7 @@ export default function GeneralPage() {
             {state.success && (
               <p className="text-green-500 text-sm">{state.success}</p>
             )}
-            <Button
-              type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              disabled={isPending}
-            >
+            <Button type="submit" variant="primary" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

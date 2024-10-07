@@ -2,21 +2,23 @@ import { NextResponse } from "next/server";
 import { getInstallationOctokit } from "../utils";
 import { Octokit } from "@octokit/rest";
 import { summarizePullRequestDiff } from "@/lib/ai";
+import prisma from "@/lib/db/prisma";
 
 export async function POST(req: Request) {
   const payload = await req.json();
   console.log("Payload", payload);
   const githubEvent = req.headers.get("x-github-event");
+  console.log("Github event", githubEvent);
 
   if (githubEvent === "installation") {
     const installation = payload.installation;
-    // TODO: handle installation
+    await handleInstallation(payload.action, installation);
   }
 
   // Handle new pull request
   // TODO: Maybe handle edited as well?
   if (githubEvent === "pull_request" && payload.action === "opened") {
-    handleNewPullRequest(payload);
+    await handleNewPullRequest(payload);
   }
 
   if (
@@ -28,6 +30,38 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ message: "Event received" }, { status: 200 });
+}
+
+async function handleInstallation(action: string, installation: any) {
+  const { account } = installation;
+  console.log("Action", action);
+  console.log("Installation", installation);
+
+  const intallationId = action === "deleted" ? null : String(installation.id);
+  const githubId = String(account.id);
+
+  // Find team associated with the github account.
+  const team = await prisma.team.findFirst({
+    where: {
+      githubId,
+    },
+  });
+  if (!team) {
+    return;
+  }
+
+  // Maybe update the installation id.
+  if (team.githubInstallationId != intallationId) {
+    console.log("Updating installation id: ", intallationId);
+    await prisma.team.update({
+      where: {
+        id: team.id,
+      },
+      data: {
+        githubInstallationId: intallationId,
+      },
+    });
+  }
 }
 
 async function handlePullRequestComment(payload: any) {

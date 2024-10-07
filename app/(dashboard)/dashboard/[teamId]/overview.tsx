@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { connectGithubAction } from "./actions";
 import { GithubIcon } from "lucide-react";
 
 export function Overview() {
@@ -17,14 +16,11 @@ export function Overview() {
               <div className="mb-4 sm:mb-0">
                 <p className="font-medium">Integration Status: Not Connected</p>
                 <p className="text-sm text-muted-foreground">
-                  No active ingration
+                  No active integration
                 </p>
               </div>
-              <form action={connectGithubAction}>
-                <Button
-                  type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
-                >
+              <form>
+                <Button type="submit" variant="primary">
                   <GithubIcon className="mr-2 h-4 w-4" />
                   Connect Github
                 </Button>

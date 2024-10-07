@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 import { ActivityType } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
-import { getSession } from "@/lib/auth/session";
+import { getSession, getTeamAccess } from "@/lib/auth/session";
+import { TeamParams } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.EMAIL_SIGN_UP]: UserPlus,
@@ -74,12 +76,13 @@ function formatAction(action: ActivityType): string {
   }
 }
 
-export default async function ActivityPage() {
-  const session = await getSession();
-  if (!session) {
-    throw new Error("User not authenticated");
+export default async function ActivityPage({ params }: { params: TeamParams }) {
+  const teamAccess = await getTeamAccess(params);
+  if (!teamAccess) {
+    return notFound();
   }
-  const { userId } = session;
+
+  const { userId } = teamAccess;
 
   const logs = await prisma.activityLog.findMany({
     where: {

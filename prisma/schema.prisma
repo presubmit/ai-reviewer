@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -27,17 +28,21 @@ model User {
 }
 
 model Team {
-  id                   String    @id @default(cuid())
-  name                 String    @db.VarChar(100)
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
+  id   String @id @default(cuid())
+  name String @db.VarChar(100)
+
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
   stripeProductId      String?
-  planName             String?   @db.VarChar(50)
-  subscriptionStatus   String?   @db.VarChar(20)
-  githubId             String?   @unique
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @default(now()) @updatedAt
-  deletedAt            DateTime?
+  planName             String? @db.VarChar(50)
+  subscriptionStatus   String? @db.VarChar(20)
+
+  githubId             String? @unique
+  githubInstallationId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
 
   members      TeamMember[]
   repositories Repository[]

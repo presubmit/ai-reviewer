@@ -5,8 +5,8 @@ import { UserProvider } from "@/lib/auth";
 import { getUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
-  title: "Next.js SaaS Starter",
-  description: "Get started quickly with Next.js, Postgres, and Stripe.",
+  title: "Presubmit.ai",
+  description: "Supercharge your code reviews with AI.",
 };
 
 export const viewport: Viewport = {

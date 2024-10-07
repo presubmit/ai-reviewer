@@ -5,25 +5,19 @@ import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
+  searchParams,
 }: {
   children: React.ReactNode;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const sesion = await getSession();
   if (!sesion) {
     redirect("/login");
   }
 
-  const userRoles = await prisma.teamMember.findMany({
-    where: { userId: sesion.userId },
-    include: {
-      team: true,
-    },
+  const teams = await prisma.team.findMany({
+    where: { members: { some: { userId: sesion.userId } } },
   });
-  const teams = userRoles?.map((u) => ({
-    id: u.teamId,
-    name: u.team.name,
-    // image: u.team.image,
-  }));
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full -mt-[1px]">

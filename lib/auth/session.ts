@@ -3,6 +3,8 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { UserRole } from "@prisma/client";
 import prisma from "@/lib/db/prisma";
+import { redirect } from "next/navigation";
+import { TeamParams } from "../utils";
 
 const key = new TextEncoder().encode(process.env.AUTH_SECRET);
 const SALT_ROUNDS = 10;
@@ -89,4 +91,24 @@ export async function getUser() {
     where: { id: session!.userId },
   });
   return user;
+}
+
+export async function getTeamAccess(params: TeamParams) {
+  const session = await getSession();
+  if (!session) {
+    redirect("/sign-in");
+  }
+
+  const teamId = params.teamId;
+  if (!teamId) {
+    redirect("/dashboard");
+  }
+
+  const teamMember = await prisma.teamMember.findFirst({
+    where: { userId: session.userId, teamId },
+  });
+  if (!teamMember) {
+    redirect("/dashboard");
+  }
+  return teamMember;
 }

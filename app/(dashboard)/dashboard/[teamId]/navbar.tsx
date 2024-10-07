@@ -2,19 +2,18 @@
 
 import * as React from "react";
 import {
-  ChevronDown,
-  LayoutDashboard,
-  Settings,
-  HelpCircle,
-  LogOut,
-  Users,
-  Shield,
   Activity,
-  Menu,
+  ChevronDown,
+  Database,
   Home,
+  LogOut,
+  Menu,
+  Settings,
+  Shield,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
-
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,16 +24,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
+import { selectTeam } from "./actions";
+import { useState } from "react";
 
 const navItems = [
-  { href: "/dashboard", icon: Home, label: "Overview" },
-  { href: "/dashboard/team", icon: Users, label: "Team" },
-  { href: "/dashboard/general", icon: Settings, label: "General" },
-  { href: "/dashboard/activity", icon: Activity, label: "Activity" },
-  { href: "/dashboard/security", icon: Shield, label: "Security" },
+  { href: "", icon: Home, label: "Overview" },
+  { href: "/repositories", icon: Database, label: "Repositories" },
+  { href: "/team", icon: Users, label: "Team" },
+  { href: "/general", icon: Settings, label: "General" },
+  { href: "/activity", icon: Activity, label: "Activity" },
+  { href: "/security", icon: Shield, label: "Security" },
 ];
 
 type NavTeam = {
@@ -44,8 +46,27 @@ type NavTeam = {
 };
 
 export default function Navbar({ teams }: { teams: NavTeam[] }) {
-  const [selectedTeam, setSelectedTeam] = React.useState(teams[0]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const params = useParams();
+  const selectedTeamId = params.teamId;
+  console.log("params", params);
+  console.log("selectedTeamId", selectedTeamId);
+  const initiallySelectedTeam =
+    teams.find((t) => t.id === selectedTeamId) || teams[0];
+
+  const [selectedTeam, setSelectedTeam] = useState(initiallySelectedTeam);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleTeamSelect = async (team: NavTeam) => {
+    try {
+      await selectTeam(team.id);
+      setSelectedTeam(team);
+    } catch (error) {
+      console.error("Error selecting team:", error);
+      // Handle error (e.g., show a notification to the user)
+    }
+  };
+
+  const buildPath = (href: string) => `/dashboard/${selectedTeamId}${href}`;
 
   const TeamSwitcher = () => (
     <DropdownMenu>
@@ -69,7 +90,7 @@ export default function Navbar({ teams }: { teams: NavTeam[] }) {
         {teams.map((team) => (
           <DropdownMenuItem
             key={team.id}
-            onSelect={() => setSelectedTeam(team)}
+            onSelect={() => handleTeamSelect(team)}
             className="cursor-pointer"
           >
             <Avatar className="h-6 w-6 mr-2">
@@ -86,22 +107,25 @@ export default function Navbar({ teams }: { teams: NavTeam[] }) {
     const pathname = usePathname();
     return (
       <div className="space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={cn(
-              "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-              item.href === pathname
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground"
-            )}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <item.icon className="h-5 w-5" />
-            <span>{item.label}</span>
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const href = buildPath(item.href);
+          return (
+            <Link
+              key={item.label}
+              href={href}
+              className={cn(
+                "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                href === pathname
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground"
+              )}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <item.icon className="h-4 w-4 mr-2" />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </div>
     );
   };
@@ -126,7 +150,7 @@ export default function Navbar({ teams }: { teams: NavTeam[] }) {
                   variant="ghost"
                   className="w-full justify-start text-muted-foreground"
                 >
-                  <LogOut className="mr-2 h-5 w-5" />
+                  <LogOut className="mr-2 h-4 w-4" />
                   Log out
                 </Button>
               </div>
@@ -144,7 +168,7 @@ export default function Navbar({ teams }: { teams: NavTeam[] }) {
             variant="ghost"
             className="w-full justify-start text-muted-foreground"
           >
-            <LogOut className="mr-2 h-5 w-5" />
+            <LogOut className="mr-4 h-4 w-4" />
             Log out
           </Button>
         </div>
