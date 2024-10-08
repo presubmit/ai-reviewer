@@ -15,6 +15,8 @@ import { useUser } from "@/lib/auth";
 import { signOut } from "@/app/(login)/actions";
 import { useRouter } from "next/navigation";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
+import logoPic from "../logo.png";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,14 +31,20 @@ function Header() {
 
   return (
     <header className="border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center lg:pr-12">
         <Link href="/" className="flex items-center">
-          <CircleIcon className="h-6 w-6 text-green-700" />
-          <span className="ml-2 text-xl font-semibold text-gray-900">
-            Presubmit.ai
+          <Image src={logoPic} alt="Presubmit" width={20} height={20} />
+          <span className="ml-3 text-xl font-semibold text-black">
+            presubmit
           </span>
         </Link>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
+          <Link
+            href="/docs"
+            className="text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            Docs
+          </Link>
           <Link
             href="/pricing"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
