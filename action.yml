@@ -1,0 +1,48 @@
+name: "AI Code Reviewer"
+description: "Review, summarize and auto-fix pull requests with AI"
+author: "Presubmit.ai"
+branding:
+  icon: "git-merge"
+  color: "black"
+
+inputs:
+  enable_pr_summary:
+    description: "Whether to automatically generate a summary for the PR"
+    required: true
+    default: true
+  enable_code_review:
+    description: "Whether to review code changes in the PR and add comments"
+    required: true
+    default: true
+  enable_title_generation:
+    description: "Whether to automatically generate a title for PRs that mention @presubmitai"
+    required: true
+    default: false
+
+  # runs:
+  #   using: "composite"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     - name: Install Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: "pnpm"
+
+  #     - uses: pnpm/action-setup@v4
+  #       name: Install pnpm
+  #       with:
+  #         version: 9
+  #         run_install: false
+
+  #     - name: Install dependencies
+  #       run: pnpm install
+
+  #     - name: Run AI Reviewer
+  #       shell: bash
+  #       run: npx ai-reviewer
+runs:
+  using: "node20"
+  main: "dist/index.js"
