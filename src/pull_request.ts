@@ -10,7 +10,7 @@ import {
   PAYLOAD_TAG_CLOSE,
   PAYLOAD_TAG_OPEN,
 } from "./messages";
-import { parseFileDiff } from "./diff";
+import { generateIncrementalDiff, parseFileDiff } from "./diff";
 import { Octokit } from "@octokit/action";
 import { Context } from "@actions/github/lib/context";
 
@@ -97,8 +97,9 @@ export async function handlePullRequest() {
         : null;
     if (incrementalDiff?.data?.files) {
       // If incremental review, only consider files that were modified within incremental change.
-      filesToReview = filesToReview.filter((f) =>
-        incrementalDiff.data.files?.some((f2) => f2.filename === f.filename)
+      filesToReview = generateIncrementalDiff(
+        incrementalDiff.data.files,
+        filesToReview
       );
     }
   } else {

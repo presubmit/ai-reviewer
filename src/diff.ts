@@ -19,6 +19,7 @@ export type Hunk = {
   commentChains?: {
     comments: ReviewComment[];
   }[];
+  supportingData?: boolean;
 };
 
 export type FileDiff = File & {
@@ -250,4 +251,45 @@ export function generateFileCodeDiff(fileDiff: FileDiff): string {
   console.log(header);
 
   return header;
+}
+
+export function generateIncrementalDiff(
+  incrementalFilesChanged: File[],
+  filesToReview: FileDiff[]
+): FileDiff[] {
+  const filesChanged = new Map<string, File>();
+  for (const file of incrementalFilesChanged) {
+    filesChanged.set(file.filename, file);
+  }
+
+  filesToReview = filesToReview.filter((f) => filesChanged.has(f.filename));
+
+  filesToReview = filesToReview.map((file) => {
+    const incrementalFile = filesChanged.get(file.filename);
+    if (!incrementalFile) {
+      return file;
+    }
+    const incrementalDiff = parseFileDiff(incrementalFile, []);
+
+    const incrementalHunks = new Map<number, string>();
+    for (const hunk of incrementalDiff.hunks) {
+      incrementalHunks.set(hunk.startLine, hunk.diff);
+    }
+
+    return {
+      ...file,
+      hunks: file.hunks.map((h) => {
+        const incrementalHunk = incrementalHunks.get(h.startLine);
+        if (incrementalHunk && incrementalHunk === h.diff) {
+          return {
+            ...h,
+            supportingData: true,
+          };
+        }
+        return h;
+      }),
+    };
+  });
+
+  return filesToReview;
 }
