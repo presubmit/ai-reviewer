@@ -21,15 +21,6 @@ const LLM_MODELS = [
     name: "gpt-4o-mini",
     createAi: createOpenAI,
   },
-  // Google
-  {
-    name: "gemini-1.5-flash",
-    createAi: createGoogleGenerativeAI,
-  },
-  {
-    name: "gemini-1.5-flash-latest",
-    createAi: createGoogleGenerativeAI,
-  },
 ];
 
 export async function runPrompt({
