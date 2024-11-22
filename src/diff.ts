@@ -17,9 +17,13 @@ export type File = {
 export type Hunk = {
   startLine: number;
   endLine: number;
+
   diff: string;
+
   commentThreads?: ReviewCommentThread[];
 };
+
+asd;
 
 export type FileDiff = File & {
   hunks: Hunk[];
