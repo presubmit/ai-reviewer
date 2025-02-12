@@ -2,6 +2,7 @@ import { runPrompt } from "./ai";
 import { z } from "zod";
 import { formatFileDiff, File, FileDiff, generateFileCodeDiff } from "./diff";
 import { ReviewCommentThread } from "./comments";
+import config from "./config";
 
 type PullRequestSummaryPrompt = {
   prTitle: string;
@@ -140,6 +141,8 @@ type PullRequestReviewPrompt = {
 export async function runReviewPrompt(
   pr: PullRequestReviewPrompt
 ): Promise<PullRequestReview> {
+
+
   let systemPrompt = `
 <IMPORTANT INSTRUCTIONS>
 You are an experienced senior software engineer tasked with reviewing a Git Pull Request (PR). Your goal is to provide comments to improve code quality, catch typos, potential bugs or security issues, and provide meaningful code suggestions when applicable. You should not make comments about adding comments, about code formatting, about code style or give implementation suggestions.
@@ -187,9 +190,12 @@ __new hunk__
 - If you cannot find any actionable comments, return an empty array.
 - VERY IMPORTANT: Keep in mind you're only seeing part of the code, and the code might be incomplete. Do not make assumptions about the code outside the diff.
 
-
+${config.styleGuideRules && config.styleGuideRules.length > 0
+      ? `Guidelines for the review, such as style guides, conventions, or best practices, violating the following guidelines should result in a critical comment:
+${config.styleGuideRules}`
+      : ''}
 </IMPORTANT INSTRUCTIONS>
-    
+
 <EXAMPLE>
 {
     "review": {
@@ -216,6 +222,7 @@ __new hunk__
 }
 </EXAMPLE>
 `;
+
 
   let userPrompt = `
 <PR title>
@@ -346,15 +353,16 @@ IMPORTANT: Do not respond with generic comments like "Thanks for the PR!" or "LG
     commentThread.comments[0].start_line || commentThread.comments[0].line;
   const endLine = commentThread.comments[0].line;
 
+
   let userPrompt = `
 Below you'll see the full comment thread, but you should focus specifically on the last comment.
 <Comment Thread>
 ${commentThread.comments
-  .map(
-    (comment) =>
-      `<author>@${comment.user.login}</author>\n<comment>${comment.body}</comment>`
-  )
-  .join("\n")}
+      .map(
+        (comment) =>
+          `<author>@${comment.user.login}</author>\n<comment>${comment.body}</comment>`
+      )
+      .join("\n")}
 </Comment Thread>
 
 <Comment Scope>

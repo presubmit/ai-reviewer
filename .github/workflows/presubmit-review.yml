@@ -25,3 +25,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: "claude-3-5-sonnet-20241022"
+        with:
+          style_guide_rules: |
+            - "Never use ternary operator."
+            - "Function should always begin with a comment that describe it."
