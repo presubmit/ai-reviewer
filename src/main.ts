@@ -22,4 +22,6 @@ async function main(): Promise<void> {
   }
 }
 
+// add some comment
+
 main();
