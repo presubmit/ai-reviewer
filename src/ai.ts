@@ -22,6 +22,10 @@ const LLM_MODELS = [
   },
   // OpenAI
   {
+    name: "gpt-4.1-mini",
+    createAi: createOpenAI,
+  },
+  {
     name: "gpt-4o-mini",
     createAi: createOpenAI,
   },
@@ -35,6 +39,10 @@ const LLM_MODELS = [
   },
   {
     name: "o3-mini",
+    createAi: createOpenAI,
+  },
+  {
+    name: "o4-mini",
     createAi: createOpenAI,
   },
   // Google stable models https://ai.google.dev/gemini-api/docs/models/gemini
