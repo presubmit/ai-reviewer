@@ -40,10 +40,12 @@ const LLM_MODELS = [
   {
     name: "o3-mini",
     createAi: createOpenAI,
+    temperature: 1,
   },
   {
     name: "o4-mini",
     createAi: createOpenAI,
+    temperature: 1,
   },
   // Google stable models https://ai.google.dev/gemini-api/docs/models/gemini
   {
@@ -99,6 +101,7 @@ export async function runPrompt({
   const { object, usage } = await generateObject({
     model: llm(model.name),
     prompt,
+    temperature: model.temperature || 0,
     system: systemPrompt,
     schema,
   });
