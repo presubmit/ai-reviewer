@@ -1,5 +1,5 @@
 import { AIProvider, InferenceConfig } from "@/ai";
-import config from "@/config";
+import config from "../config";
 import { info } from "@actions/core";
 import { generateObject } from "ai";
 
