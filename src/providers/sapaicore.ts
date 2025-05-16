@@ -143,6 +143,10 @@ export class SAPAIProvider implements AIProvider {
     return modelName.includes("claude");
   }
 
+  private isClaude37Model(modelName: string): boolean {
+    return modelName.includes("claude-3.7");
+  }
+
   private isOpenAIModel(modelName: string): boolean {
     return modelName.includes("gpt") || modelName.startsWith("o");
   }
@@ -173,12 +177,21 @@ export class SAPAIProvider implements AIProvider {
     let payload: any;
 
     if (isAnthropicModel) {
-      // Use non-streaming Anthropic/Bedrock API
-      url = `${this.baseUrl}/inference/deployments/${deploymentId}/invoke`;
-      payload = {
-        system: system || "",
-        messages: [{ role: "user", content: prompt }],
-      };
+      if (this.isClaude37Model(this.modelName)) {
+        // Use converse endpoint for Claude 3.7
+        url = `${this.baseUrl}/inference/deployments/${deploymentId}/converse`;
+        payload = {
+          system: system ? [{ text: system }] : undefined,
+          messages: [{ role: "user", content: [{ text: prompt }] }],
+        };
+      } else {
+        // Use invoke endpoint for other Anthropic models
+        url = `${this.baseUrl}/inference/deployments/${deploymentId}/invoke`;
+        payload = {
+          system: system || "",
+          messages: [{ role: "user", content: prompt }],
+        };
+      }
     } else if (isOpenAIModel) {
       // Use non-streaming OpenAI/Azure API
       url = `${this.baseUrl}/inference/deployments/${deploymentId}/chat/completions?api-version=2024-12-01-preview`;
@@ -199,7 +212,12 @@ export class SAPAIProvider implements AIProvider {
     // Process response based on model type
     let result;
     if (isAnthropicModel) {
-      result = response.data.content[0].text;
+      if (this.isClaude37Model(this.modelName)) {
+        // Claude 3.7 response format is different
+        result = response.data.message.content[0].text;
+      } else {
+        result = response.data.content[0].text;
+      }
     } else if (isOpenAIModel) {
       result = response.data.choices[0].message.content;
     }
@@ -207,7 +225,12 @@ export class SAPAIProvider implements AIProvider {
     // Log usage if in debug mode
     if (process.env.DEBUG) {
       let usage = {};
-      if (isAnthropicModel && response.data.usage) {
+      if (this.isClaude37Model(this.modelName) && response.data.usage) {
+        usage = {
+          input_tokens: response.data.usage.inputTokens,
+          output_tokens: response.data.usage.outputTokens,
+        };
+      } else if (isAnthropicModel && response.data.usage) {
         usage = {
           input_tokens: response.data.usage.input_tokens,
           output_tokens: response.data.usage.output_tokens,
