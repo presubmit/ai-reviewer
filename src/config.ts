@@ -19,11 +19,6 @@ export class Config {
       throw new Error("GITHUB_TOKEN is not set");
     }
 
-    this.llmApiKey = process.env.LLM_API_KEY;
-    if (!this.llmApiKey) {
-      throw new Error("LLM_API_KEY is not set");
-    }
-
     this.llmModel = process.env.LLM_MODEL || getInput("llm_model");
     if (!this.llmModel?.length) {
       throw new Error("LLM_MODEL is not set");
@@ -35,12 +30,11 @@ export class Config {
       console.log(`Using default LLM_PROVIDER '${this.llmProvider}'`);
     }
 
-    if (!process.env.DEBUG) {
-      return;
+    this.llmApiKey = process.env.LLM_API_KEY;
+    // SAP AI SDK does not require an API key
+    if (!this.llmApiKey && this.llmProvider !== "sap-ai-sdk") {
+      throw new Error("LLM_API_KEY is not set");
     }
-    console.log("[debug] loading extra inputs from .env");
-
-    this.styleGuideRules = process.env.STYLE_GUIDE_RULES;
 
     // SAP AI Core configuration
     this.sapAiCoreClientId = process.env.SAP_AI_CORE_CLIENT_ID;
@@ -48,6 +42,16 @@ export class Config {
     this.sapAiCoreTokenUrl = process.env.SAP_AI_CORE_TOKEN_URL;
     this.sapAiCoreBaseUrl = process.env.SAP_AI_CORE_BASE_URL;
     this.sapAiResourceGroup = process.env.SAP_AI_RESOURCE_GROUP;
+    if (!this.sapAiCoreClientId || !this.sapAiCoreClientSecret || !this.sapAiCoreTokenUrl || !this.sapAiCoreBaseUrl) {
+      throw new Error("SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL.");
+    }
+
+    if (!process.env.DEBUG) {
+      return;
+    }
+    console.log("[debug] loading extra inputs from .env");
+
+    this.styleGuideRules = process.env.STYLE_GUIDE_RULES;
   }
 
   public loadInputs() {
