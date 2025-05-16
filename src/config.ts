@@ -58,12 +58,8 @@ export class Config {
 
     // Custom style guide rules
     try {
-      const styleGuideRules = getMultilineInput("style_guide_rules") || [];
-      if (
-        Array.isArray(styleGuideRules) &&
-        styleGuideRules.length &&
-        styleGuideRules[0].trim().length
-      ) {
+      const styleGuideRules = getMultilineInput('style_guide_rules') || [];
+      if (Array.isArray(styleGuideRules) && styleGuideRules.length && styleGuideRules[0].trim().length) {
         this.styleGuideRules = styleGuideRules.join("\n");
       }
     } catch (e) {
@@ -77,25 +73,26 @@ export class Config {
 let configInstance: Config | null = null;
 
 // If not in test environment, create and configure the instance
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== 'test') {
   configInstance = new Config();
   configInstance.loadInputs();
 }
 
 // Export the instance or a function to create one for tests
-export default process.env.NODE_ENV === "test"
+export default process.env.NODE_ENV === 'test'
   ? {
       // Default values for tests
-      githubToken: "mock-token",
-      llmApiKey: "mock-api-key",
-      llmModel: "mock-model",
-      llmProvider: "mock-provider",
-      styleGuideRules: "",
-      sapAiCoreClientId: "mock-client-id",
-      sapAiCoreClientSecret: "mock-client-secret",
-      sapAiCoreTokenUrl: "mock-token-url",
-      sapAiCoreBaseUrl: "mock-base-url",
-      sapAiResourceGroup: "default",
+      githubToken: 'mock-token',
+      llmApiKey: 'mock-api-key',
+      llmModel: 'mock-model',
+      llmProvider: 'mock-provider',
+      styleGuideRules: '',
+      sapAiCoreClientId: 'mock-client-id',
+      sapAiCoreClientSecret: 'mock-client-secret',
+      sapAiCoreTokenUrl: 'mock-token-url',
+      sapAiCoreBaseUrl: 'mock-base-url',
+      sapAiResourceGroup: 'default',
       loadInputs: jest.fn(),
     }
   : configInstance!;
+
