@@ -214,7 +214,7 @@ export class SAPAIProvider implements AIProvider {
     if (isAnthropicModel) {
       if (this.isClaude37Model(this.modelName)) {
         // Claude 3.7 response format is different
-        result = response.data.message.content[0].text;
+        result = response.data.output.message.content[0].text;
       } else {
         result = response.data.content[0].text;
       }
