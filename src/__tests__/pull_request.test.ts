@@ -15,6 +15,8 @@ jest.mock('../config', () => ({
     llmApiKey: 'mock-api-key',
     llmModel: 'mock-model',
     styleGuideRules: '',
+    githubApiUrl: 'https://api.github.com',
+    githubServerUrl: 'https://github.com',
     loadInputs: jest.fn()
   }
 }));
