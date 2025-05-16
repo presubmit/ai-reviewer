@@ -15,3 +15,11 @@ inputs:
     required: false
     description: 'Custom style guide rules that will be enforced during review by generating critical comments'
     default: ''
+  github_api_url:
+    required: false
+    description: 'GitHub API URL for GitHub Enterprise Server (e.g., https://github.example.com/api/v3)'
+    default: 'https://api.github.com'
+  github_server_url:
+    required: false
+    description: 'GitHub Server URL for GitHub Enterprise Server (e.g., https://github.example.com)'
+    default: 'https://github.com'
