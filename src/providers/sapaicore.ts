@@ -2,6 +2,7 @@ import axios from "axios";
 import { AIProvider, InferenceConfig } from "@/ai";
 import config from "../config";
 import { info } from "@actions/core";
+import { StructuredOutputParser } from "@langchain/core/output_parsers";
 
 interface Deployment {
   id: string;
@@ -169,6 +170,12 @@ export class SAPAIProvider implements AIProvider {
       "Content-Type": "application/json",
     };
 
+    // Prepare system prompt to include target schema
+    const parser = StructuredOutputParser.fromZodSchema(schema);
+    system = system
+      ? `${system}\n\n${parser.getFormatInstructions()}`
+      : parser.getFormatInstructions();
+
     // Determine model type and prepare payload
     const isAnthropicModel = this.isAnthropicModel(this.modelName);
     const isOpenAIModel = this.isOpenAIModel(this.modelName);
@@ -247,7 +254,7 @@ export class SAPAIProvider implements AIProvider {
     // Parse and validate against schema
     try {
       // Parse the result as JSON
-      const parsedResult = JSON.parse(result);
+      const parsedResult = await parser.parse(result);
       // Validate against schema
       return schema.parse(parsedResult);
     } catch (error) {
