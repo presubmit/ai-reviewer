@@ -42,7 +42,7 @@ export class Config {
     this.sapAiCoreTokenUrl = process.env.SAP_AI_CORE_TOKEN_URL;
     this.sapAiCoreBaseUrl = process.env.SAP_AI_CORE_BASE_URL;
     this.sapAiResourceGroup = process.env.SAP_AI_RESOURCE_GROUP;
-    if (!this.sapAiCoreClientId || !this.sapAiCoreClientSecret || !this.sapAiCoreTokenUrl || !this.sapAiCoreBaseUrl) {
+    if (this.llmProvider === "sap-ai-sdk" && (!this.sapAiCoreClientId || !this.sapAiCoreClientSecret || !this.sapAiCoreTokenUrl || !this.sapAiCoreBaseUrl)) {
       throw new Error("SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL.");
     }
 
