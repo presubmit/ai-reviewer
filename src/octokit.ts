@@ -10,14 +10,14 @@ interface ThrottleOptions {
 
 const SmartOctokit = Octokit.plugin(throttling, retry);
 
-export function initOctokit(token?: string, baseUrl?: string): Octokit {
+export function initOctokit(token?: string, apiBaseUrl?: string): Octokit {
   if (!token) {
     throw new Error("GitHub token is required but was not provided");
   }
 
   return new SmartOctokit({
     auth: token,
-    baseUrl,
+    baseUrl: apiBaseUrl,
     throttle: {
       onRateLimit: (
         retryAfter: number,
