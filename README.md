@@ -106,6 +106,28 @@ The action requires:
 - `LLM_API_KEY`: Your API key (added in step 1)
 - `LLM_MODEL`: Which LLM model to use. Make sure the model is [supported](https://github.com/presubmit/ai-reviewer/blob/main/src/ai.ts) and matches the `LLM_API_KEY`.
 
+### GitHub Enterprise Server Support
+
+If you're using GitHub Enterprise Server, you can configure the action to work with your instance by adding these environment variables:
+
+```yaml
+      - uses: presubmit/ai-reviewer@latest
+        env:
+          GITHUB_API_URL: "https://github.example.com/api/v3"
+          GITHUB_SERVER_URL: "https://github.example.com"
+```
+
+You can also configure these settings using input parameters:
+
+```yaml
+      - uses: presubmit/ai-reviewer@latest
+        with:
+          github_api_url: "https://github.example.com/api/v3"
+          github_server_url: "https://github.example.com"
+```
+
+Make sure to replace `https://github.example.com` with your actual GitHub Enterprise Server URL.
+
 <br/>
 
 ## Features

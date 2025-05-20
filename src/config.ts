@@ -5,6 +5,8 @@ export class Config {
   public llmModel: string | undefined;
   public githubToken: string | undefined;
   public styleGuideRules: string | undefined;
+  public githubApiUrl: string;
+  public githubServerUrl: string;
 
   constructor() {
     this.githubToken = process.env.GITHUB_TOKEN;
@@ -21,6 +23,12 @@ export class Config {
     if (!this.llmModel?.length) {
       throw new Error("LLM_MODEL is not set");
     }
+
+    // GitHub Enterprise Server support
+    this.githubApiUrl =
+      process.env.GITHUB_API_URL || getInput('github_api_url') || 'https://api.github.com';
+    this.githubServerUrl =
+      process.env.GITHUB_SERVER_URL || getInput('github_server_url') || 'https://github.com';
 
     if (!process.env.DEBUG) {
       return;
@@ -59,13 +67,15 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Export the instance or a function to create one for tests
-export default process.env.NODE_ENV === 'test' 
-  ? { 
+export default process.env.NODE_ENV === 'test'
+  ? {
       // Default values for tests
       githubToken: 'mock-token',
       llmApiKey: 'mock-api-key',
       llmModel: 'mock-model',
       styleGuideRules: '',
+      githubApiUrl: 'https://api.github.com',
+      githubServerUrl: 'https://github.com',
       loadInputs: jest.fn()
-    } 
+    }
   : configInstance!;

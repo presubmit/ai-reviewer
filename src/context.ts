@@ -12,7 +12,8 @@ async function loadDebugContext(): Promise<Context> {
   if (!process.env.GITHUB_TOKEN) {
     throw new Error("GITHUB_TOKEN is not set");
   }
-  const octokit = getOctokit(process.env.GITHUB_TOKEN);
+  const baseUrl = process.env.GITHUB_API_URL || undefined;
+  const octokit = getOctokit(process.env.GITHUB_TOKEN, { baseUrl });
 
   const [owner, repo] = process.env.GITHUB_REPOSITORY?.split("/") || [];
 

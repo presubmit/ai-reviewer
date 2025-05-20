@@ -12,7 +12,7 @@ jest.mock('@octokit/action', () => {
   Object.defineProperty(MockOctokit, 'plugin', {
     value: mockPlugin
   });
-  
+
   return {
     Octokit: MockOctokit
   };
@@ -37,4 +37,9 @@ describe('Octokit', () => {
   test('throws when no token is provided', () => {
     expect(() => initOctokit()).toThrow('GitHub token is required but was not provided');
   });
-}); 
+
+  test('initializes with a token and baseUrl', () => {
+    const octokit = initOctokit('test-token', 'https://github.example.com/api/v3');
+    expect(octokit).toBeDefined();
+  });
+});

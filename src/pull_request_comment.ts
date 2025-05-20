@@ -36,7 +36,7 @@ export async function handlePullRequestComment() {
     return;
   }
 
-  const octokit = initOctokit(config.githubToken);
+  const octokit = initOctokit(config.githubToken, config.githubApiUrl);
 
   // Fetch comment thread
   const commentThread = await getCommentThread(octokit, {
