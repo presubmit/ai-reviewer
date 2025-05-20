@@ -14,7 +14,7 @@ interface Token {
   scope: string;
   jti: string;
   token_type: string;
-  exipres_at: number;
+  expires_at: number;
 }
 export class SAPAIProvider implements AIProvider {
   private modelName: string;
@@ -62,13 +62,13 @@ export class SAPAIProvider implements AIProvider {
     });
 
     const token = response.data as Token;
-    token.exipres_at = Date.now() + token.expires_in * 1000;
+    token.expires_at = Date.now() + token.expires_in * 1000;
     return token;
   }
 
   // Get token (with caching)
   private async getToken(): Promise<string> {
-    if (!this.token || this.token.exipres_at < Date.now()) {
+    if (!this.token || this.token.expires_at < Date.now()) {
       this.token = await this.authenticate();
     }
     return this.token.access_token;
@@ -103,8 +103,9 @@ export class SAPAIProvider implements AIProvider {
         })
         .filter((deployment: any) => deployment !== null);
     } catch (error) {
-      console.error("Error fetching deployments:", error);
-      throw new Error("Failed to fetch deployments");
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Error fetching deployments: ${errorMessage}`);
+      throw new Error(`Failed to fetch deployments: ${errorMessage}`);
     }
   }
 
