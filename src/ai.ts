@@ -6,51 +6,13 @@ import config from "./config";
 import { AISDKProvider } from "./providers/ai-sdk";
 import { SAPAIProvider } from "./providers/sapaicore";
 
-export type InferenceConfig = {
-  prompt: string;
-  temperature?: number;
-  system?: string;
-  schema: z.ZodObject<any, any>;
-};
-
-export interface AIProvider {
-  runInference(params: InferenceConfig): Promise<any>;
-}
-
 export enum AIProviderType {
-  "ai-sdk" = "ai-sdk",
-  "sap-ai-sdk" = "sap-ai-sdk",
+  AI_SDK = "ai-sdk",
+  SAP_AI_SDK = "sap-ai-sdk",
 }
-
-class AIProviderFactory {
-  static getProvider(
-    provider: AIProviderType,
-    modelConfig: ModelConfig
-  ): AIProvider {
-    switch (provider) {
-      case AIProviderType["ai-sdk"]:
-        if (!modelConfig.createAi) {
-          throw new Error(
-            `No createAi function found for model ${modelConfig.name}`
-          );
-        }
-        return new AISDKProvider(modelConfig.createAi, modelConfig.name);
-      case AIProviderType["sap-ai-sdk"]:
-        return new SAPAIProvider(modelConfig.name);
-      default:
-        throw new Error(`Unknown provider: ${provider}`);
-    }
-  }
-}
-
-type ModelConfig = {
-  name: string;
-  createAi?: any;
-  temperature?: number;
-};
 
 const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
-  "ai-sdk": [
+  [AIProviderType.AI_SDK]: [
     // Anthropic
     {
       name: "claude-3-5-sonnet-20240620",
@@ -134,7 +96,7 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       createAi: createGoogleGenerativeAI,
     },
   ],
-  "sap-ai-sdk": [
+  [AIProviderType.SAP_AI_SDK]: [
     {
       name: "anthropic--claude-3.7-sonnet",
     },
@@ -178,6 +140,44 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "o4-mini",
     },
   ],
+};
+
+export type InferenceConfig = {
+  prompt: string;
+  temperature?: number;
+  system?: string;
+  schema: z.ZodObject<any, any>;
+};
+
+export interface AIProvider {
+  runInference(params: InferenceConfig): Promise<any>;
+}
+
+class AIProviderFactory {
+  static getProvider(
+    provider: AIProviderType,
+    modelConfig: ModelConfig
+  ): AIProvider {
+    switch (provider) {
+      case AIProviderType["AI_SDK"]:
+        if (!modelConfig.createAi) {
+          throw new Error(
+            `No createAi function found for model ${modelConfig.name}`
+          );
+        }
+        return new AISDKProvider(modelConfig.createAi, modelConfig.name);
+      case AIProviderType["SAP_AI_SDK"]:
+        return new SAPAIProvider(modelConfig.name);
+      default:
+        throw new Error(`Unknown provider: ${provider}`);
+    }
+  }
+}
+
+type ModelConfig = {
+  name: string;
+  createAi?: any;
+  temperature?: number;
 };
 
 export async function runPrompt({
