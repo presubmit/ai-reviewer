@@ -189,7 +189,11 @@ export async function runPrompt({
   systemPrompt?: string;
   schema: z.ZodObject<any, any>;
 }) {
-  if (!(config.llmProvider in AIProviderType)) {
+  if (
+    !Object.values(AIProviderType).includes(
+      config.llmProvider as AIProviderType
+    )
+  ) {
     throw new Error(
       `Unknown LLM provider: ${
         config.llmProvider
