@@ -32,7 +32,7 @@ export async function handlePullRequest() {
     return;
   }
 
-  const octokit = initOctokit(config.githubToken);
+  const octokit = initOctokit(config.githubToken, config.githubApiUrl);
 
   if (shouldIgnorePullRequest(pull_request)) {
     return;

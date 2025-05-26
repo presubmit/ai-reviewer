@@ -7,6 +7,8 @@ export class Config {
   public llmProvider: string;
   public githubToken: string | undefined;
   public styleGuideRules: string | undefined;
+  public githubApiUrl: string;
+  public githubServerUrl: string;
 
   public sapAiCoreClientId: string | undefined;
   public sapAiCoreClientSecret: string | undefined;
@@ -55,6 +57,12 @@ export class Config {
         "SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL."
       );
     }
+
+    // GitHub Enterprise Server support
+    this.githubApiUrl =
+      process.env.GITHUB_API_URL || getInput('github_api_url') || 'https://api.github.com';
+    this.githubServerUrl =
+      process.env.GITHUB_SERVER_URL || getInput('github_server_url') || 'https://github.com';
 
     if (!process.env.DEBUG) {
       return;
@@ -110,6 +118,8 @@ export default process.env.NODE_ENV === "test"
       sapAiCoreTokenUrl: "mock-token-url",
       sapAiCoreBaseUrl: "mock-base-url",
       sapAiResourceGroup: "default",
+      githubApiUrl: "https://api.github.com",
+      githubServerUrl: "https://github.com",
       loadInputs: jest.fn(),
     }
   : configInstance!;
