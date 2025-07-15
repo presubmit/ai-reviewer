@@ -82,17 +82,25 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "gemini-2.5-pro",
       createAi: createGoogleGenerativeAI,
     },
-    // Google experimental models https://ai.google.dev/gemini-api/docs/models/experimental-models
     {
-      name: "gemini-2.5-flash-preview-05-20",
+      name: "gemini-2.5-flash",
       createAi: createGoogleGenerativeAI,
     },
+    // Google experimental models https://ai.google.dev/gemini-api/docs/models/experimental-models
     {
       name: "gemini-2.5-pro-preview-03-25",
       createAi: createGoogleGenerativeAI,
     },
     {
+      name: "gemini-2.5-flash-preview-05-20",
+      createAi: createGoogleGenerativeAI,
+    },
+    {
       name: "gemini-2.5-flash-preview-04-17",
+      createAi: createGoogleGenerativeAI,
+    },
+    {
+      name: "gemini-2.5-flash-lite-preview-06-17",
       createAi: createGoogleGenerativeAI,
     },
   ],
