@@ -81,7 +81,7 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
     {
       name: "gemini-2.5-pro",
       createAi: createGoogleGenerativeAI,
-    },,
+    },
     {
       name: "gemini-2.5-flash",
       createAi: createGoogleGenerativeAI,
@@ -106,7 +106,7 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
     {
       name: "gemini-2.5-flash-preview-05-20",
       createAi: createGoogleGenerativeAI,
-    },,
+    },
     {
       name: "gemini-2.5-flash-lite-preview-06-17",
       createAi: createGoogleGenerativeAI,
