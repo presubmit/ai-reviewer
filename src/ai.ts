@@ -26,6 +26,14 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "claude-3-7-sonnet-20250219",
       createAi: createAnthropic,
     },
+    {
+      name: "claude-sonnet-4-20250514",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-opus-4-20250514",
+      createAi: createAnthropic,
+    },
     // OpenAI
     {
       name: "gpt-4.1-mini",
@@ -52,6 +60,10 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "o4-mini",
       createAi: createOpenAI,
       temperature: 1,
+    },
+    {
+      name: "gpt-4.1",
+      createAi: createOpenAI,
     },
     // Google stable models https://ai.google.dev/gemini-api/docs/models/gemini
     {
