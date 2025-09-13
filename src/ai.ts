@@ -34,7 +34,26 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "claude-opus-4-20250514",
       createAi: createAnthropic,
     },
+    {
+      name: "claude-opus-4-1-20250805",
+      createAi: createAnthropic,
+    },
     // OpenAI
+    {
+      name: "gpt-5",
+      createAi: createOpenAI,
+      temperature: 1,
+    },
+    {
+      name: "gpt-5-mini",
+      createAi: createOpenAI,
+      temperature: 1,
+    },
+    {
+      name: "gpt-5-nano",
+      createAi: createOpenAI,
+      temperature: 1,
+    },
     {
       name: "gpt-4.1-mini",
       createAi: createOpenAI,
@@ -157,6 +176,15 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
     },
     {
       name: "gpt-4.1-nano",
+    },
+    {
+      name: "gpt-5",
+    },
+    {
+      name: "gpt-5-mini",
+    },
+    {
+      name: "gpt-5-nano",
     },
     {
       name: "o3-mini",
