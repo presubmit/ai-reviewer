@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "DEBUG=true npx tsx -r dotenv/config src/main.ts",
-    "build": "npx esbuild src/main.ts --bundle --platform=node --outfile=dist/index.js --minify",
+    "build": "npx esbuild src/main.ts --bundle --platform=node --outfile=dist/index.js --minify && npx esbuild src/cli.ts --bundle --platform=node --outfile=dist/cli.js --minify",
     "start": "node dist/index.js",
+    "review": "node dist/cli.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

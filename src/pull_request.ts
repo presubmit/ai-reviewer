@@ -16,6 +16,8 @@ import { Octokit } from "@octokit/action";
 import { Context } from "@actions/github/lib/context";
 import { buildComment, listPullRequestCommentThreads } from "./comments";
 
+const IS_DRY_RUN = process.env.DRY_RUN === "1" || process.env.DRY_RUN === "true";
+
 export async function handlePullRequest() {
   const context = await loadContext();
   if (
@@ -119,7 +121,15 @@ export async function handlePullRequest() {
     return;
   }
 
-  if (overviewComment) {
+  if (IS_DRY_RUN) {
+    const body = buildLoadingMessage(
+      (lastCommitReviewed ?? pull_request.base.sha),
+      commitsToReview,
+      filesToReview
+    );
+    info(`DRY-RUN: would ${overviewComment ? 'update' : 'create'} overview loading comment`);
+    console.log(body);
+  } else if (overviewComment) {
     await octokit.rest.issues.updateComment({
       ...context.repo,
       comment_id: overviewComment.id,
@@ -160,24 +170,34 @@ export async function handlePullRequest() {
     pull_request.title.includes("@presubmit")
   ) {
     info(`title contains mention of presubmit.ai, so generating a new title`);
-    await octokit.rest.pulls.update({
-      ...context.repo,
-      pull_number: pull_request.number,
-      title: summary.title,
-      // body: summary.description,
-    });
+    if (IS_DRY_RUN) {
+      info(`DRY-RUN: would update PR title to: ${summary.title}`);
+    } else {
+      await octokit.rest.pulls.update({
+        ...context.repo,
+        pull_number: pull_request.number,
+        title: summary.title,
+        // body: summary.description,
+      });
+    }
   }
 
   // Update overview comment with the PR overview
-  await octokit.rest.issues.updateComment({
-    ...context.repo,
-    comment_id: overviewComment.id,
-    body: buildOverviewMessage(
-      summary,
-      commits.map((c) => c.sha)
-    ),
-  });
-  info(`updated overview comment with walkthrough`);
+  const walkthroughBody = buildOverviewMessage(
+    summary,
+    commits.map((c: any) => c.sha)
+  );
+  if (IS_DRY_RUN) {
+    info(`DRY-RUN: would update overview comment with walkthrough`);
+    console.log(walkthroughBody);
+  } else if (overviewComment) {
+    await octokit.rest.issues.updateComment({
+      ...context.repo,
+      comment_id: overviewComment.id,
+      body: walkthroughBody,
+    });
+    info(`updated overview comment with walkthrough`);
+  }
 
   // ======= START REVIEW =======
 
@@ -191,8 +211,27 @@ export async function handlePullRequest() {
 
   // Post review comments
   const comments = review.comments.filter(
-    (c) => c.content.trim() !== "" && files.some((f) => f.filename === c.file)
+    (c) => c.content.trim() !== "" && files.some((f: any) => f.filename === c.file)
   );
+
+  if (IS_DRY_RUN) {
+    info(`DRY-RUN: would submit review with ${comments.length} inline comments`);
+    const finalBody = buildOverviewMessage(
+      summary,
+      commits.map((c: any) => c.sha)
+    );
+    console.log('=== Final Overview (dry-run) ===');
+    console.log(finalBody);
+    if (comments.length) {
+      console.log('=== Inline Comments (dry-run) ===');
+      for (const c of comments) {
+        const range = c.start_line && c.end_line ? `${c.start_line}-${c.end_line}` : `${c.end_line ?? ''}`;
+        console.log(`• ${c.file}:${range} ${c.label ? '['+c.label+'] ' : ''}${c.critical ? '(critical) ' : ''}\n${c.content}\n`);
+      }
+    }
+    return;
+  }
+
   await submitReview(
     octokit,
     context,
