@@ -86,9 +86,10 @@ async function reviewPR(
   let outPath: string | undefined;
   
   if (out) {
+    const sanitizedPrNum = String(prNumber).replace(/[^0-9]/g, '');
     outPath = typeof out === 'string' && out.trim().length
       ? (path.isAbsolute(out) ? out : path.join(process.cwd(), out))
-      : path.join(process.cwd(), 'dry', `pr-${prNumber}.txt`);
+      : path.join(process.cwd(), 'dry', `pr-${sanitizedPrNum}.txt`);
     
     const chunks: string[] = [];
     const o1 = process.stdout.write.bind(process.stdout);
