@@ -23,3 +23,25 @@ inputs:
     required: false
     description: 'GitHub Server URL for GitHub Enterprise Server (e.g., https://github.example.com)'
     default: 'https://github.com'
+    required: false
+    description: 'Enhanced senior engineer review mode: on | off | auto'
+    default: 'auto'
+  llm_model:
+    required: false
+    description: 'Override LLM model (e.g., gpt-4o-mini)'
+    default: ''
+    required: false
+    description: 'Allow the action to update PR title when @presubmit is present (default: false)'
+    default: 'false'
+  max_comments:
+    required: false
+    description: 'Maximum number of inline comments per review run (default: 40)'
+    default: '40'
+  max_codeblock_lines:
+    required: false
+    description: 'Maximum lines in code block snippets (default: 60)'
+    default: '60'
+  max_review_chars:
+    required: false
+    description: 'Maximum total characters of diffs per LLM call (default: 725000)'
+    default: '725000'

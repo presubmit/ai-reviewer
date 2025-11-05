@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/action";
 import { COMMENT_SIGNATURE } from "./messages";
+import config from "./config";
 
 export type ReviewComment = {
   path: string;
@@ -27,13 +28,27 @@ export async function listPullRequestCommentThreads(
     pull_number,
   }: { owner: string; repo: string; pull_number: number }
 ): Promise<ReviewCommentThread[]> {
-  let { data: comments } = await octokit.rest.pulls.listReviewComments({
-    owner,
-    repo,
-    pull_number,
-  });
+  const per_page = 100;
+  let page = 1;
+  const all: any[] = [];
+  while (true) {
+    const { data } = await (octokit as any).rest.pulls.listReviewComments({
+      owner,
+      repo,
+      pull_number,
+      per_page,
+      page,
+    });
+    if (Array.isArray(data)) {
+      all.push(...data);
+      if (data.length < per_page) break;
+      page += 1;
+    } else {
+      break;
+    }
+  }
 
-  comments = comments.map((c) => ({
+  const comments = all.map((c) => ({
     ...c,
     user: {
       ...c.user,
@@ -41,7 +56,7 @@ export async function listPullRequestCommentThreads(
     },
   }));
 
-  return generateCommentThreads(comments);
+  return generateCommentThreads(comments as any);
 }
 
 export async function getCommentThread(
@@ -75,18 +90,18 @@ export function isThreadRelevant(thread: ReviewCommentThread): boolean {
 function generateCommentThreads(
   reviewComments: ReviewComment[]
 ): ReviewCommentThread[] {
-  const topLevelComments = reviewComments.filter(
-    (c) => !c.in_reply_to_id && c.body.length && !!c.line
-  );
+  const topLevelComments = reviewComments.filter((c) => {
+    const hasTopLevelMarker = !c.in_reply_to_id && c.body.length;
+    const hasLineRef = typeof c.line === 'number' || typeof c.start_line === 'number';
+    return hasTopLevelMarker && hasLineRef;
+  });
 
   return topLevelComments.map((topLevelComment) => {
     return {
       file: topLevelComment.path,
       comments: [
         topLevelComment,
-        ...reviewComments.filter(
-          (c) => c.in_reply_to_id === topLevelComment.id
-        ),
+        ...reviewComments.filter((c) => c.in_reply_to_id === topLevelComment.id),
       ],
     };
   });
@@ -97,5 +112,51 @@ export function isOwnComment(comment: string): boolean {
 }
 
 export function buildComment(comment: string): string {
-  return comment + "\n\n" + COMMENT_SIGNATURE;
+  const max = (config as any).maxCodeblockLines ?? 60;
+  const lines = (comment || '').split('\n');
+  const out: string[] = [];
+  let inBlock = false;
+  let emittedTrunc = false;
+  let count = 0;
+
+  const isFence = (s: string) => s.trim().startsWith('```');
+
+  for (const line of lines) {
+    if (isFence(line)) {
+      if (inBlock) {
+        // closing fence
+        if (emittedTrunc) {
+          // no-op, marker already added
+        }
+        out.push(line);
+        inBlock = false;
+        emittedTrunc = false;
+        count = 0;
+      } else {
+        // opening fence
+        out.push(line);
+        inBlock = true;
+        emittedTrunc = false;
+        count = 0;
+      }
+      continue;
+    }
+
+    if (inBlock) {
+      if (count < max) {
+        out.push(line);
+        count += 1;
+      } else {
+        if (!emittedTrunc) {
+          out.push('... (truncated; more lines omitted) ...');
+          emittedTrunc = true;
+        }
+        // drop extra lines
+      }
+    } else {
+      out.push(line);
+    }
+  }
+
+  return out.join('\n') + "\n\n" + COMMENT_SIGNATURE;
 }

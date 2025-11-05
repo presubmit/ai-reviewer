@@ -1,5 +1,9 @@
 export class Octokit {
-  constructor(options?: any) {}
+  static __lastOptions: any;
+
+  constructor(options?: any) {
+    (Octokit as any).__lastOptions = options;
+  }
 
   // Add any methods your tests need
   rest = {
@@ -13,4 +17,4 @@ export class Octokit {
   static plugin(...plugins: any[]) {
     return Octokit;
   }
-} 
+}
