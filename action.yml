@@ -23,6 +23,7 @@ inputs:
     required: false
     description: 'GitHub Server URL for GitHub Enterprise Server (e.g., https://github.example.com)'
     default: 'https://github.com'
+  custom_mode:
     required: false
     description: 'Enhanced senior engineer review mode: on | off | auto'
     default: 'auto'
@@ -30,6 +31,15 @@ inputs:
     required: false
     description: 'Override LLM model (e.g., gpt-4o-mini)'
     default: ''
+  llm_provider:
+    required: false
+    description: 'Override LLM provider (e.g., ai-sdk)'
+    default: ''
+  review_scopes:
+    required: false
+    description: 'Comma-separated review scopes to run: security,performance,best-practices'
+    default: ''
+  allow_title_update:
     required: false
     description: 'Allow the action to update PR title when @presubmit is present (default: false)'
     default: 'false'
