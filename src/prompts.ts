@@ -308,11 +308,37 @@ ${pr.files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
       ),
   });
 
-  return (await runPrompt({
+  const raw: any = await runPrompt({
     prompt: userPrompt,
     systemPrompt,
     schema,
-  })) as PullRequestReview;
+  });
+
+  // Some providers wrap the response in a $PARAMETER_NAME key
+  // Unwrap if needed, otherwise use raw directly
+  let unwrapped = raw;
+  if (raw && typeof raw === 'object' && '$PARAMETER_NAME' in raw) {
+    unwrapped = raw.$PARAMETER_NAME;
+  }
+
+  // Validate that we have the required fields, providing defaults if missing
+  if (!unwrapped || typeof unwrapped !== 'object') {
+    throw new Error('Invalid response from LLM: expected object with review and comments');
+  }
+
+  const result: PullRequestReview = {
+    review: unwrapped.review && typeof unwrapped.review === 'object'
+      ? unwrapped.review
+      : {
+          estimated_effort_to_review: 3,
+          score: 50,
+          has_relevant_tests: false,
+          security_concerns: 'Unable to determine',
+        },
+    comments: Array.isArray(unwrapped.comments) ? unwrapped.comments : [],
+  };
+
+  return result;
 }
 
 type ReviewCommentPrompt = {
