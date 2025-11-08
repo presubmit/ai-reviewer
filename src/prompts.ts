@@ -300,7 +300,7 @@ ${pr.files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
   });
 
   let schema = z.object({
-    review: reviewSchema.describe("The full review of the PR"),
+    review: reviewSchema.optional().describe("The full review of the PR"),
     comments: z
       .array(commentSchema)
       .describe(
@@ -308,11 +308,23 @@ ${pr.files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
       ),
   });
 
-  return (await runPrompt({
+  const raw: any = await runPrompt({
     prompt: userPrompt,
     systemPrompt,
     schema,
-  })) as PullRequestReview;
+  });
+
+  const normalized: PullRequestReview = {
+    review: raw?.review || {
+      estimated_effort_to_review: 3,
+      score: 50,
+      has_relevant_tests: false,
+      security_concerns: 'Unable to determine',
+    },
+    comments: Array.isArray(raw?.comments) ? raw.comments : [],
+  };
+
+  return normalized;
 }
 
 type ReviewCommentPrompt = {
