@@ -183,6 +183,60 @@ env:
 ```
 
 
+
+#### Quick examples
+
+Example 1 — Select specific scopes (2 of 3) with enhanced prompts:
+
+```yaml
+with:
+  custom_mode: on                     # enhanced prompts
+  review_scopes: security,performance # run only these two
+```
+
+Example 2 — Run all scopes with standard prompts:
+
+```yaml
+with:
+  custom_mode: off        # standard prompts
+  # review_scopes omitted # default = run all three: security, performance, best-practices
+```
+
+Note:
+- Omit review_scopes to run all three scopes by default.
+- custom_mode: off uses the standard prompts; it does not change which scopes run.
+
+
+### Customize Prompts (src/prompts.custom.ts)
+
+If you want to change the enhanced review behavior, edit the custom prompt in:
+
+- Path: `src/prompts.custom.ts`
+- What to edit: the `systemPrompt` inside `runReviewPrompt()`
+- How to enable: set `custom_mode: on` (always) or `custom_mode: auto` (only for complex code files)
+
+Locate and modify the system prompt here:
+
+<details><summary>Where to edit</summary>
+
+```ts
+// src/prompts.custom.ts
+export async function runReviewPrompt(...) {
+  let systemPrompt = `
+  <IMPORTANT INSTRUCTIONS>
+  ... customize your rules/tone here (add team policies, linters, examples) ...
+  </IMPORTANT INSTRUCTIONS>`;
+  // Keep the Zod schema and output fields the same.
+}
+```
+</details>
+
+Important: Keep the output shape the same (review, documentation, comments). If you add fields, they may be ignored. For GitHub Actions in your own fork, rebuild before local testing:
+
+```bash
+pnpm build
+```
+
 ## Features
 
 ### 🤖 Smart Reviews
