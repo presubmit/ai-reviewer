@@ -30,17 +30,30 @@ export async function listPullRequestCommentThreads(
 ): Promise<ReviewCommentThread[]> {
   const per_page = 100;
   let page = 1;
-  const all: any[] = [];
+  const all: ReviewComment[] = [];
   while (true) {
-    const { data } = await (octokit as any).rest.pulls.listReviewComments({
+    const { data } = await octokit.rest.pulls.listReviewComments({
       owner,
       repo,
       pull_number,
       per_page,
       page,
     });
+
     if (Array.isArray(data)) {
-      all.push(...data);
+      const mapped: ReviewComment[] = data.map((c: any) => ({
+        path: c.path,
+        body: c.body ?? "",
+        diff_hunk: c.diff_hunk,
+        line: typeof c.line === 'number' ? c.line : undefined,
+        in_reply_to_id: typeof c.in_reply_to_id === 'number' ? c.in_reply_to_id : undefined,
+        id: c.id,
+        start_line: typeof c.start_line === 'number' ? c.start_line : null,
+        user: {
+          login: isOwnComment(c.body ?? "") ? "presubmit" : (c.user?.login ?? ""),
+        },
+      }));
+      all.push(...mapped);
       if (data.length < per_page) break;
       page += 1;
     } else {
@@ -48,15 +61,7 @@ export async function listPullRequestCommentThreads(
     }
   }
 
-  const comments = all.map((c) => ({
-    ...c,
-    user: {
-      ...c.user,
-      login: isOwnComment(c.body) ? "presubmit" : c.user.login,
-    },
-  }));
-
-  return generateCommentThreads(comments as any);
+  return generateCommentThreads(all);
 }
 
 export async function getCommentThread(
@@ -112,8 +117,8 @@ export function isOwnComment(comment: string): boolean {
 }
 
 export function buildComment(comment: string): string {
-  const max = (config as any).maxCodeblockLines ?? 60;
-  const lines = (comment || '').split('\n');
+  const max = (config as { maxCodeblockLines: number }).maxCodeblockLines ?? 60;
+  const lines = (comment ?? '').split('\n');
   const out: string[] = [];
   let inBlock = false;
   let emittedTrunc = false;
@@ -124,11 +129,7 @@ export function buildComment(comment: string): string {
   for (const line of lines) {
     if (isFence(line)) {
       if (inBlock) {
-        // closing fence - emit truncation marker if needed before closing
-        if (count >= max && !emittedTrunc) {
-          out.push('... (truncated; more lines omitted) ...');
-          emittedTrunc = true;
-        }
+        // closing fence
         out.push(line);
         inBlock = false;
         emittedTrunc = false;
