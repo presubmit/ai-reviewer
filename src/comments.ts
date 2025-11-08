@@ -122,12 +122,12 @@ export function buildComment(comment: string): string {
   const isFence = (s: string) => s.trim().startsWith('```');
 
   for (const line of lines) {
+    if (inBlock && count >= max) {
+      continue;
+    }
     if (isFence(line)) {
       if (inBlock) {
         // closing fence
-        if (emittedTrunc) {
-          // no-op, marker already added
-        }
         out.push(line);
         inBlock = false;
         emittedTrunc = false;
