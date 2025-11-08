@@ -205,7 +205,12 @@ ${files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
   }
 
   const normalized: PullRequestReview = {
-    review: unwrapped.review,
+    review: unwrapped.review || {
+      estimated_effort_to_review: 3,
+      score: 50,
+      has_relevant_tests: false,
+      security_concerns: 'Unable to determine',
+    },
     documentation: typeof unwrapped.documentation === 'string' ? unwrapped.documentation : undefined,
     comments,
   };
