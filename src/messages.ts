@@ -87,12 +87,19 @@ export function buildLoadingMessage(
 
 export function buildOverviewMessage(
   summary: PullRequestSummary,
-  commits: string[]
+  commits: string[],
+  documentation?: string
 ): string {
   let message = `## PR Summary\n\n`;
 
   // Add description with proper spacing
   message += `${summary.description.trim()}\n\n`;
+
+  // Add documentation/rationale if provided (from custom review mode)
+  if (documentation && documentation.trim()) {
+    message += `### Documentation\n\n`;
+    message += `${documentation.trim()}\n\n`;
+  }
 
   message += `### Changes\n\n`;
 

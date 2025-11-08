@@ -2,7 +2,8 @@ import { info, warning } from "@actions/core";
 import config from "./config";
 import { initOctokit } from "./octokit";
 import { loadContext } from "./context";
-import { runSummaryPrompt, AIComment, runReviewPrompt } from "./prompts";
+import { runSummaryPrompt, AIComment, runReviewPrompt as runReviewPromptCore } from "./prompts";
+import { runReviewPrompt as runReviewPromptCustom } from "./prompts.custom";
 import {
   buildLoadingMessage,
   buildReviewSummary,
@@ -201,24 +202,91 @@ export async function handlePullRequest() {
 
   // ======= START REVIEW =======
 
-  const review = await runReviewPrompt({
-    files: filesToReview,
-    prTitle: pull_request.title,
-    prDescription: pull_request.body || "",
-    prSummary: summary.description,
-  });
-  info(`reviewed pull request`);
+  // Batch files by character count to avoid exceeding LLM context limits
+  const batchFilesByChars = (files: FileDiff[], maxChars: number): FileDiff[][] => {
+    const batches: FileDiff[][] = [];
+    let current: FileDiff[] = [];
+    let size = 0;
+    const estimate = (f: FileDiff) => {
+      const hunksSize = f.hunks.reduce((acc, h) => acc + (h.diff?.length || 0), 0);
+      // add overhead for headers/markup
+      return hunksSize + (f.filename?.length || 0) + 200;
+    };
+    for (const f of files) {
+      const s = estimate(f);
+      if (current.length && size + s > maxChars) {
+        batches.push(current);
+        current = [];
+        size = 0;
+      }
+      current.push(f);
+      size += s;
+    }
+    if (current.length) batches.push(current);
+    return batches;
+  };
+
+  const batches = batchFilesByChars(filesToReview, config.maxReviewChars);
+  info(`split ${filesToReview.length} files into ${batches.length} batch(es) for review`);
+
+  let allComments: AIComment[] = [];
+  let firstReviewDoc: string | undefined;
+
+  for (const batch of batches) {
+    const testing = process.env.NODE_ENV === 'test';
+    const hasProvider = !!(config as any).llmProvider && !!(config as any).llmModel;
+    const allowCustom = !testing && hasProvider;
+    const useCustom = allowCustom && shouldUseCustomMode(batch, config.customMode);
+    const runner = useCustom ? runReviewPromptCustom : runReviewPromptCore;
+    const part = await runner({
+      files: batch,
+      prTitle: pull_request.title,
+      prDescription: pull_request.body || "",
+      prSummary: summary.description,
+    });
+    if (part?.comments?.length) allComments.push(...part.comments);
+    const maybeDoc: unknown = (part as any)?.documentation;
+    if (!firstReviewDoc && typeof maybeDoc === 'string' && maybeDoc.trim()) {
+      firstReviewDoc = maybeDoc.trim();
+    }
+  }
+  info(`reviewed pull request in ${batches.length} batch(es)`);
 
   // Post review comments
-  const comments = review.comments.filter(
-    (c) => c.content.trim() !== "" && files.some((f: any) => f.filename === c.file)
+  const comments = allComments.filter(
+    (c) => typeof c.content === 'string' && c.content.trim() !== "" && files.some((f: any) => f.filename === c.file)
   );
+
+  // Update overview comment with documentation if available
+  if (firstReviewDoc && overviewComment) {
+    try {
+      const combinedBody = buildOverviewMessage(
+        summary,
+        commits.map((c: any) => c.sha),
+        firstReviewDoc
+      );
+      if (IS_DRY_RUN) {
+        info(`DRY-RUN: would update overview with documentation`);
+        console.log(combinedBody);
+      } else {
+        await octokit.rest.issues.updateComment({
+          ...context.repo,
+          comment_id: overviewComment.id,
+          body: combinedBody,
+        });
+        info(`updated overview comment with documentation`);
+      }
+    } catch (e) {
+      warning(`error updating overview comment with documentation: ${e}`);
+    }
+  }
 
   if (IS_DRY_RUN) {
     info(`DRY-RUN: would submit review with ${comments.length} inline comments`);
     const finalBody = buildOverviewMessage(
       summary,
-      commits.map((c: any) => c.sha)
+      commits.map((c: any) => c.sha),
+      firstReviewDoc
     );
     console.log('=== Final Overview (dry-run) ===');
     console.log(finalBody);
@@ -346,6 +414,23 @@ async function submitReview(
       )
     );
   }
+}
+
+function isComplexCodeFile(filename: string): boolean {
+  const lower = filename.toLowerCase();
+  const complexExtensions = [
+    ".py", ".js", ".ts", ".java", ".scala", ".kt", ".cs", ".cpp", ".cc", ".cxx",
+    ".go", ".rs", ".rb", ".php", ".swift", ".m", ".mm", ".dart", ".ex", ".exs"
+  ];
+  return complexExtensions.some((ext) => lower.endsWith(ext));
+}
+
+function shouldUseCustomMode(files: FileDiff[], mode?: string): boolean {
+  const m = (mode || "auto").toLowerCase();
+  if (m === "on") return true;
+  if (m === "off") return false;
+  // In auto mode, use custom enhanced review for complex code files
+  return files.some((f) => isComplexCodeFile(f.filename));
 }
 
 function shouldIgnorePullRequest(pull_request: { body?: string }) {
