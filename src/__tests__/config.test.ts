@@ -126,4 +126,40 @@ describe('Config', () => {
   //     expect(config.styleGuideRules).toBe('Debug rule');
   //     expect(core.getMultilineInput).not.toHaveBeenCalled();
   //   });
+
+  test('loads LLM_BASE_URL from environment variable', () => {
+    process.env.GITHUB_TOKEN = 'test-token';
+    process.env.LLM_API_KEY = 'test-api-key';
+    process.env.LLM_MODEL = 'test-model';
+    process.env.LLM_BASE_URL = 'https://openrouter.ai/api/v1';
+
+    const config = new Config();
+
+    expect(config.llmBaseUrl).toBe('https://openrouter.ai/api/v1');
+  });
+
+  test('llmBaseUrl is undefined when not set', () => {
+    process.env.GITHUB_TOKEN = 'test-token';
+    process.env.LLM_API_KEY = 'test-api-key';
+    process.env.LLM_MODEL = 'test-model';
+
+    const config = new Config();
+
+    expect(config.llmBaseUrl).toBeUndefined();
+  });
+
+  test('loads LLM_BASE_URL from action input', () => {
+    process.env.GITHUB_TOKEN = 'test-token';
+    process.env.LLM_API_KEY = 'test-api-key';
+    process.env.LLM_MODEL = 'test-model';
+
+    mockGetInput.mockImplementation((name) => {
+      if (name === 'llm_base_url') return 'https://anyscale.com/api/v1';
+      return '';
+    });
+
+    const config = new Config();
+
+    expect(config.llmBaseUrl).toBe('https://anyscale.com/api/v1');
+  });
 });
