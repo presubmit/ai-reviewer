@@ -170,7 +170,7 @@ export async function main() {
   const args = parseArgs(process.argv.slice(2));
   
   // Extract owner/repo from GITHUB_REPOSITORY env or use defaults
-  const defaultRepo = process.env.GITHUB_REPOSITORY || 'presubmit/ai-reviewer';
+  const defaultRepo = process.env.GITHUB_REPOSITORY || 'shawnd/pr-reviewer';
   const [defaultOwner, defaultRepoName] = defaultRepo.split('/');
   
   const owner = args.owner || defaultOwner;
@@ -191,7 +191,7 @@ export async function main() {
   review --pr <number> [--owner <owner>] [--repo <repo>] [--dry-run] [--out [path] | -out [path]]
 
 Examples:
-  review --list-prs --owner presubmit --repo ai-reviewer
+  review --list-prs --owner shawnd --repo pr-reviewer
   review --pr 123 --dry-run
   review --pr 123 --dry-run --out review-output.txt
   review --pr 123 --owner myorg --repo myrepo

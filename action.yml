@@ -1,6 +1,6 @@
-name: "Presubmit - AI Code Review & Fixes"
+name: "PR Reviewer - AI Code Review & Fixes"
 description: "AI-powered code reviews that detect issues, provide summaries, and suggest auto-fixes on PRs."
-author: "Presubmit.ai"
+author: "shawnd"
 branding:
   icon: "check-square"
   color: "black"

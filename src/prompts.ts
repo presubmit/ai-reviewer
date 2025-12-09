@@ -156,10 +156,10 @@ __old hunk__
 -old code line2 removed in the PR
  unchanged code line3
  __existing_comment_thread__
- presubmitai: This is a comment on the code
+ review: This is a comment on the code
  user2: This is a reply to the comment above
  __existing_comment_thread__
- presubmitai: This is a comment on some other parts of the code
+ review: This is a comment on some other parts of the code
  user2: This is a reply to the above comment
 
 
@@ -335,7 +335,7 @@ The comment thread is specific to a line or multiple lines of code in a specific
 
 In your response, return the exact text of your comment, in markdown, starting by mentioning the @user who made the comment. Your response will be used as a comment on the PR, so make sure it's easy to understand and actionable.
 
-Comments from @presubmit are yours.
+Comments from @review are yours.
 
 IMPORTANT: Do not respond with generic comments like "Thanks for the PR!" or "LGTM" or "Let me know if you need any help". If the input comment is not actionable, return an empty string. Do not offer to help unless asked.
 `;

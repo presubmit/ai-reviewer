@@ -5,12 +5,12 @@ import { Context } from "@actions/github/lib/context";
 import config from "./config";
 
 export const OVERVIEW_MESSAGE_SIGNATURE =
-  "\n<!-- presubmit.ai: overview message -->";
+  "\n<!-- pr-reviewer: overview message -->";
 
-export const COMMENT_SIGNATURE = "\n<!-- presubmit.ai: comment -->";
+export const COMMENT_SIGNATURE = "\n<!-- pr-reviewer: comment -->";
 
-export const PAYLOAD_TAG_OPEN = "\n<!-- presubmit.ai: payload --";
-export const PAYLOAD_TAG_CLOSE = "\n-- presubmit.ai: payload -->";
+export const PAYLOAD_TAG_OPEN = "\n<!-- pr-reviewer: payload --";
+export const PAYLOAD_TAG_CLOSE = "\n-- pr-reviewer: payload -->";
 
 function getCommitUrl(
   serverUrl: string,

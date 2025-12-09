@@ -37,7 +37,7 @@ export async function listPullRequestCommentThreads(
     ...c,
     user: {
       ...c.user,
-      login: isOwnComment(c.body) ? "presubmit" : c.user.login,
+      login: isOwnComment(c.body) ? "review" : c.user.login,
     },
   }));
 
@@ -67,8 +67,7 @@ export function isThreadRelevant(thread: ReviewCommentThread): boolean {
   return thread.comments.some(
     (c) =>
       c.body.includes(COMMENT_SIGNATURE) ||
-      c.body.includes("@presubmitai") ||
-      c.body.includes("@presubmit")
+      c.body.includes("@review")
   );
 }
 
