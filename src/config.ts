@@ -5,6 +5,7 @@ export class Config {
   public llmApiKey: string | undefined;
   public llmModel: string | undefined;
   public llmProvider: string;
+  public llmBaseUrl: string | undefined;
   public githubToken: string | undefined;
   public styleGuideRules: string | undefined;
   public githubApiUrl: string;
@@ -39,6 +40,10 @@ export class Config {
     if (!this.llmApiKey && !isSapAiSdk) {
       throw new Error("LLM_API_KEY is not set");
     }
+
+    const baseUrlFromEnv = process.env.LLM_BASE_URL;
+    const baseUrlFromInput = getInput("llm_base_url");
+    this.llmBaseUrl = baseUrlFromEnv || baseUrlFromInput || undefined;
 
     // SAP AI Core configuration
     this.sapAiCoreClientId = process.env.SAP_AI_CORE_CLIENT_ID;
@@ -112,6 +117,7 @@ export default process.env.NODE_ENV === "test"
       llmApiKey: "mock-api-key",
       llmModel: "mock-model",
       llmProvider: "mock-provider",
+      llmBaseUrl: undefined,
       styleGuideRules: "",
       sapAiCoreClientId: "mock-client-id",
       sapAiCoreClientSecret: "mock-client-secret",
