@@ -13,13 +13,13 @@ export enum AIProviderType {
 
 const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
   [AIProviderType.AI_SDK]: [
-    // Anthropic
+    // Anthropic - https://platform.claude.com/docs/en/about-claude/models/overview
     {
-      name: "claude-3-5-sonnet-20240620",
+      name: "claude-3-5-haiku-20241022",
       createAi: createAnthropic,
     },
     {
-      name: "claude-3-5-sonnet-20241022",
+      name: "claude-3-5-haiku-latest",
       createAi: createAnthropic,
     },
     {
@@ -27,7 +27,15 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       createAi: createAnthropic,
     },
     {
+      name: "claude-3-7-sonnet-latest",
+      createAi: createAnthropic,
+    },
+    {
       name: "claude-sonnet-4-20250514",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-sonnet-4-0",
       createAi: createAnthropic,
     },
     {
@@ -35,7 +43,23 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       createAi: createAnthropic,
     },
     {
+      name: "claude-opus-4-0",
+      createAi: createAnthropic,
+    },
+    {
       name: "claude-opus-4-1-20250805",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-opus-4-1",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-haiku-4-5-20251001",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-haiku-4-5",
       createAi: createAnthropic,
     },
     {
@@ -46,21 +70,54 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
       name: "claude-sonnet-4-5",
       createAi: createAnthropic,
     },
-    // OpenAI
+    {
+      name: "claude-opus-4-5-20251101",
+      createAi: createAnthropic,
+    },
+    {
+      name: "claude-opus-4-5",
+      createAi: createAnthropic,
+    },
+    // OpenAI - https://platform.openai.com/docs/models
+    {
+      name: "gpt-5.2",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5.2-pro",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5.1",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5.1-codex",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5.1-codex-max",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5-codex",
+      createAi: createOpenAI,
+    },
+    {
+      name: "gpt-5-pro",
+      createAi: createOpenAI,
+    },
     {
       name: "gpt-5",
       createAi: createOpenAI,
-      temperature: 1,
     },
     {
       name: "gpt-5-mini",
       createAi: createOpenAI,
-      temperature: 1,
     },
     {
       name: "gpt-5-nano",
       createAi: createOpenAI,
-      temperature: 1,
     },
     {
       name: "gpt-4.1-mini",
@@ -81,12 +138,10 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
     {
       name: "o3-mini",
       createAi: createOpenAI,
-      temperature: 1,
     },
     {
       name: "o4-mini",
       createAi: createOpenAI,
-      temperature: 1,
     },
     {
       name: "gpt-4.1",
@@ -94,62 +149,38 @@ const LLM_MODELS: Record<AIProviderType, ModelConfig[]> = {
     },
     // Google stable models https://ai.google.dev/gemini-api/docs/models/gemini
     {
-      name: "gemini-2.0-flash-001",
+      name: "gemini-2.0-flash-lite",
       createAi: createGoogleGenerativeAI,
     },
     {
-      name: "gemini-2.0-flash-lite-preview-02-05",
+      name: "gemini-2.0-flash",
       createAi: createGoogleGenerativeAI,
     },
     {
-      name: "gemini-1.5-flash",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-1.5-flash-latest",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-1.5-flash-8b",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-1.5-pro",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-2.5-pro",
+      name: "gemini-2.5-flash-lite",
       createAi: createGoogleGenerativeAI,
     },
     {
       name: "gemini-2.5-flash",
       createAi: createGoogleGenerativeAI,
     },
+    {
+      name: "gemini-2.5-pro",
+      createAi: createGoogleGenerativeAI,
+    },
     // Google experimental models https://ai.google.dev/gemini-api/docs/models/experimental-models
     {
-      name: "gemini-2.5-pro-preview-05-06",
+      name: "gemini-2.5-flash-lite-preview-09-2025",
       createAi: createGoogleGenerativeAI,
     },
     {
-      name: "gemini-2.5-flash-preview-04-17",
+      name: "gemini-2.5-flash-preview-09-2025",
       createAi: createGoogleGenerativeAI,
     },
     {
-      name: "gemini-2.0-pro-exp-02-05",
+      name: "gemini-3-pro-preview",
       createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-2.0-flash-thinking-exp-01-21",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-2.5-flash-preview-05-20",
-      createAi: createGoogleGenerativeAI,
-    },
-    {
-      name: "gemini-2.5-flash-lite-preview-06-17",
-      createAi: createGoogleGenerativeAI,
-    },
+    }
   ],
   [AIProviderType.SAP_AI_SDK]: [
     {
