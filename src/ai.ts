@@ -266,7 +266,16 @@ export async function runPrompt({
   }
   const providerType = config.llmProvider as AIProviderType;
   const providerModels = LLM_MODELS[providerType];
-  const modelConfig = providerModels.find((m) => m.name === config.llmModel);
+  let modelConfig = providerModels.find((m) => m.name === config.llmModel);
+
+  // When using a custom base URL, skip whitelist validation and use OpenAI SDK
+  if (!modelConfig && config.llmBaseUrl && providerType === AIProviderType.AI_SDK) {
+    modelConfig = {
+      name: config.llmModel!,
+      createAi: createOpenAI,
+    };
+  }
+
   if (!modelConfig) {
     throw new Error(
       `Unknown LLM model: ${config.llmModel}. For provider ${

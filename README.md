@@ -105,6 +105,23 @@ The action requires:
 - `GITHUB_TOKEN`: Automatically provided by GitHub Actions
 - `LLM_API_KEY`: Your API key (added in step 1)
 - `LLM_MODEL`: Which LLM model to use. Make sure the model is [supported](https://github.com/presubmit/ai-reviewer/blob/main/src/ai.ts) and matches the `LLM_API_KEY`.
+- `LLM_BASE_URL` (optional): Base URL for OpenAI-compatible providers when using `LLM_PROVIDER=ai-sdk` (e.g., `https://openrouter.ai/api/v1` for OpenRouter). Not applicable for `sap-ai-sdk` provider.
+
+### Using OpenAI-Compatible Providers
+
+To use OpenRouter or other OpenAI-compatible providers with the `ai-sdk` provider, add the `LLM_BASE_URL` environment variable:
+
+```yaml
+      - uses: presubmit/ai-reviewer@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_MODEL: "openai/gpt-4o-mini"
+          LLM_PROVIDER: "ai-sdk"
+          LLM_BASE_URL: "https://openrouter.ai/api/v1"
+```
+
+**Note**: This configuration only works with `LLM_PROVIDER=ai-sdk`. It supports any OpenAI-compatible API including OpenRouter, Anyscale, Together AI, and others. The `sap-ai-sdk` provider uses its own `SAP_AI_CORE_BASE_URL` configuration instead.
 
 ### GitHub Enterprise Server Support
 
@@ -283,6 +300,7 @@ Run the reviewer locally against real PRs using your GitHub authentication.
   - `LLM_API_KEY=...` (your API key)
   - `LLM_MODEL=...` (e.g., `claude-3-5-sonnet-20241022`, `gpt-4o-mini`)
   - Optional: `LLM_PROVIDER=ai-sdk` (default)
+  - Optional: `LLM_BASE_URL=...` (for OpenAI-compatible providers like OpenRouter)
 
 ### Build
 

@@ -5,6 +5,7 @@ export class Config {
   public llmApiKey: string | undefined;
   public llmModel: string | undefined;
   public llmProvider: string;
+  public llmBaseUrl: string | undefined;
   public githubToken: string | undefined;
   public styleGuideRules: string | undefined;
   public githubApiUrl: string;
@@ -50,6 +51,11 @@ export class Config {
     if (!this.llmApiKey && !isSapAiSdk && !(isBedrockWithAwsCreds && hasAwsCredentials)) {
       throw new Error("LLM_API_KEY is not set");
     }
+
+    // Configurable base URL for OpenAI-compatible providers (e.g., OpenRouter)
+    const baseUrlFromEnv = process.env.LLM_BASE_URL;
+    const baseUrlFromInput = getInput("llm_base_url");
+    this.llmBaseUrl = baseUrlFromEnv || baseUrlFromInput || undefined;
 
     // GitHub Enterprise Server support
     this.githubApiUrl =
@@ -147,6 +153,7 @@ export default process.env.NODE_ENV === "test"
       llmApiKey: "mock-api-key",
       llmModel: "mock-model",
       llmProvider: "mock-provider",
+      llmBaseUrl: undefined,
       styleGuideRules: "",
       sapAiCoreClientId: "mock-client-id",
       sapAiCoreClientSecret: "mock-client-secret",
