@@ -41,12 +41,8 @@ inputs:
     default: ''
   allow_title_update:
     required: false
-    description: 'Allow the action to update PR title when @presubmit is present (default: false)'
-    default: 'false'
-  max_comments:
-    required: false
-    description: 'Maximum number of inline comments per review run (default: 40)'
-    default: '40'
+    description: 'Allow the action to update PR title when @presubmit is present (default: true)'
+    default: 'true'
   max_codeblock_lines:
     required: false
     description: 'Maximum lines in code block snippets (default: 60)'

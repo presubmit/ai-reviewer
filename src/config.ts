@@ -11,8 +11,7 @@ export class Config {
   public githubServerUrl: string;
   public customMode: string | undefined;
   public reviewScopes: string[] | undefined;
-  public allowTitleUpdate: boolean = false;
-  public maxComments: number;
+  public allowTitleUpdate: boolean = true;
   public maxCodeblockLines: number;
   public maxReviewChars: number;
 
@@ -70,14 +69,9 @@ export class Config {
       .map((s) => s.trim().toLowerCase())
       .filter((s) => !!s);
 
-    // Gate PR title updates (disabled by default per requirements)
-    const allowTitle = process.env.ALLOW_TITLE_UPDATE || getInput('allow_title_update') || 'false';
+    // Gate PR title updates (enabled by default to preserve existing behavior)
+    const allowTitle = process.env.ALLOW_TITLE_UPDATE || getInput('allow_title_update') || 'true';
     this.allowTitleUpdate = String(allowTitle).toLowerCase() === 'true';
-
-    // Reviewer caps (configurable)
-    const maxCommentsEnv = process.env.REVIEW_MAX_COMMENTS || getInput('max_comments');
-    const parsedMax = maxCommentsEnv && parseInt(maxCommentsEnv, 10);
-    this.maxComments = Number.isFinite(parsedMax as any) && (parsedMax as any)! > 0 ? (parsedMax as any) : 40;
 
     const maxCodeblockLinesEnv = process.env.REVIEW_MAX_CODEBLOCK_LINES || getInput('max_codeblock_lines');
     const parsedMaxCode = maxCodeblockLinesEnv && parseInt(maxCodeblockLinesEnv, 10);
@@ -163,8 +157,7 @@ export default process.env.NODE_ENV === "test"
       githubServerUrl: "https://github.com",
       customMode: "off",
       reviewScopes: ["security", "performance", "best-practices"],
-      allowTitleUpdate: false,
-      maxComments: 40,
+      allowTitleUpdate: true,
       maxCodeblockLines: 60,
       maxReviewChars: 725000,
       loadInputs: jest.fn(),
