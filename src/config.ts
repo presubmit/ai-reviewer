@@ -1,6 +1,13 @@
 import { getInput, getMultilineInput } from "@actions/core";
 import { AIProviderType } from "./ai";
 
+/** Parse a string as a positive integer, returning defaultVal if invalid or <= 0 */
+function parsePositiveInt(value: string | undefined, defaultVal: number): number {
+  if (!value) return defaultVal;
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : defaultVal;
+}
+
 export class Config {
   public llmApiKey: string | undefined;
   public llmModel: string | undefined;
@@ -10,6 +17,11 @@ export class Config {
   public styleGuideRules: string | undefined;
   public githubApiUrl: string;
   public githubServerUrl: string;
+  public customMode: string | undefined;
+  public reviewScopes: string[] | undefined;
+  public allowTitleUpdate: boolean = true;
+  public maxCodeblockLines: number;
+  public maxReviewChars: number;
 
   public sapAiCoreClientId: string | undefined;
   public sapAiCoreClientSecret: string | undefined;
@@ -36,14 +48,52 @@ export class Config {
 
     this.llmApiKey = process.env.LLM_API_KEY;
     const isSapAiSdk = this.llmProvider === AIProviderType.SAP_AI_SDK;
-    // SAP AI SDK does not require an API key
-    if (!this.llmApiKey && !isSapAiSdk) {
+    const isBedrockWithAwsCreds = this.llmModel?.includes('qwen.') ||
+                                   this.llmModel?.includes('anthropic.') ||
+                                   this.llmModel?.includes('meta.') ||
+                                   this.llmModel?.includes('amazon.');
+    const hasAwsCredentials = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+
+    // SAP AI SDK and AWS Bedrock (with IAM credentials) do not require an API key
+    if (!this.llmApiKey && !isSapAiSdk && !(isBedrockWithAwsCreds && hasAwsCredentials)) {
       throw new Error("LLM_API_KEY is not set");
     }
 
+    // Configurable base URL for OpenAI-compatible providers (e.g., OpenRouter)
     const baseUrlFromEnv = process.env.LLM_BASE_URL;
     const baseUrlFromInput = getInput("llm_base_url");
     this.llmBaseUrl = baseUrlFromEnv || baseUrlFromInput || undefined;
+
+    // GitHub Enterprise Server support
+    this.githubApiUrl =
+      process.env.GITHUB_API_URL || getInput('github_api_url') || 'https://api.github.com';
+    this.githubServerUrl =
+      process.env.GITHUB_SERVER_URL || getInput('github_server_url') || 'https://github.com';
+
+    // Custom review mode: 'on' | 'off' | 'auto' (default)
+    this.customMode = (
+      process.env.CUSTOM_MODE || getInput('custom_mode') || 'auto'
+    ).toLowerCase();
+
+    // Review scopes: comma-separated list; default to comprehensive review areas
+    const scopesRaw = process.env.REVIEW_SCOPES || getInput('review_scopes') || 'security,performance,best-practices';
+    this.reviewScopes = scopesRaw
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => !!s);
+
+    // Gate PR title updates (enabled by default to preserve existing behavior)
+    const allowTitle = process.env.ALLOW_TITLE_UPDATE || getInput('allow_title_update') || 'true';
+    this.allowTitleUpdate = String(allowTitle).toLowerCase() === 'true';
+
+    this.maxCodeblockLines = parsePositiveInt(
+      process.env.REVIEW_MAX_CODEBLOCK_LINES || getInput('max_codeblock_lines'),
+      60
+    );
+    this.maxReviewChars = parsePositiveInt(
+      process.env.REVIEW_MAX_REVIEW_CHARS || getInput('max_review_chars'),
+      725000
+    );
 
     // SAP AI Core configuration
     this.sapAiCoreClientId = process.env.SAP_AI_CORE_CLIENT_ID;
@@ -62,12 +112,6 @@ export class Config {
         "SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL."
       );
     }
-
-    // GitHub Enterprise Server support
-    this.githubApiUrl =
-      process.env.GITHUB_API_URL || getInput('github_api_url') || 'https://api.github.com';
-    this.githubServerUrl =
-      process.env.GITHUB_SERVER_URL || getInput('github_server_url') || 'https://github.com';
 
     if (!process.env.DEBUG) {
       return;
@@ -126,6 +170,11 @@ export default process.env.NODE_ENV === "test"
       sapAiResourceGroup: "default",
       githubApiUrl: "https://api.github.com",
       githubServerUrl: "https://github.com",
+      customMode: "off",
+      reviewScopes: ["security", "performance", "best-practices"],
+      allowTitleUpdate: true,
+      maxCodeblockLines: 60,
+      maxReviewChars: 725000,
       loadInputs: jest.fn(),
     }
   : configInstance!;

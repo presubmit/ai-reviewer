@@ -2,7 +2,7 @@
   <h1>
     Presubmit - AI Code Reviewer
   </h1>
-  
+
   <p><em>Context-aware, intelligent and instant PR reviews</em></p>
 
 [![GitHub Stars](https://img.shields.io/github/stars/presubmit/ai-reviewer?style=social)](https://github.com/presubmit/ai-reviewer/stargazers) &nbsp;
@@ -146,6 +146,113 @@ You can also configure these settings using input parameters:
 Make sure to replace `https://github.example.com` with your actual GitHub Enterprise Server URL.
 
 <br/>
+
+### Enable Custom Mode and Configure Review Scopes
+
+You can control the reviewer style and focus areas directly from the workflow using action inputs.
+
+- custom_mode: on | off | auto (default: auto)
+  - on: Always use the enhanced “senior engineer” review prompts
+  - off: Use the standard review prompts only
+  - auto (default): Automatically use the enhanced prompts for complex code files
+
+- review_scopes: choose 1, 2, or all 3 focus areas (comma‑separated)
+  1) security
+  2) performance
+  3) best-practices
+  - Leave empty to run all three (default)
+
+Examples (inside the uses: presubmit/ai-reviewer@latest step):
+
+```yaml
+with:
+  # Turn ON enhanced senior‑engineer review mode
+  custom_mode: on
+
+  # Review just one area (1 of 3)
+  review_scopes: security
+```
+
+```yaml
+with:
+  # AUTO mode: enhanced prompts only for complex code files
+  custom_mode: auto
+
+  # Review 2 areas (2 of 3)
+  review_scopes: security,performance
+```
+
+```yaml
+with:
+  # Turn OFF enhanced prompts entirely
+  custom_mode: off
+
+  # Review all 3 areas explicitly (same as default)
+  review_scopes: security,performance,best-practices
+```
+
+You can also set these via environment variables instead of inputs:
+
+```yaml
+env:
+  CUSTOM_MODE: on                   # on | off | auto
+  REVIEW_SCOPES: security,performance
+```
+
+
+
+#### Quick examples
+
+Example 1 — Select specific scopes (2 of 3) with enhanced prompts:
+
+```yaml
+with:
+  custom_mode: on                     # enhanced prompts
+  review_scopes: security,performance # run only these two
+```
+
+Example 2 — Run all scopes with standard prompts:
+
+```yaml
+with:
+  custom_mode: off        # standard prompts
+  # review_scopes omitted # default = run all three: security, performance, best-practices
+```
+
+Note:
+- Omit review_scopes to run all three scopes by default.
+- custom_mode: off uses the standard prompts; it does not change which scopes run.
+
+
+### Customize Prompts (src/prompts.custom.ts)
+
+If you want to change the enhanced review behavior, edit the custom prompt in:
+
+- Path: `src/prompts.custom.ts`
+- What to edit: the `systemPrompt` inside `runReviewPrompt()`
+- How to enable: set `custom_mode: on` (always) or `custom_mode: auto` (only for complex code files)
+
+Locate and modify the system prompt here:
+
+<details><summary>Where to edit</summary>
+
+```ts
+// src/prompts.custom.ts
+export async function runReviewPrompt(...) {
+  let systemPrompt = `
+  <IMPORTANT INSTRUCTIONS>
+  ... customize your rules/tone here (add team policies, linters, examples) ...
+  </IMPORTANT INSTRUCTIONS>`;
+  // Keep the Zod schema and output fields the same.
+}
+```
+</details>
+
+Important: Keep the output shape the same (review, documentation, comments). If you add fields, they may be ignored. For GitHub Actions in your own fork, rebuild before local testing:
+
+```bash
+pnpm build
+```
 
 ## Features
 
