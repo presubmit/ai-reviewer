@@ -1,6 +1,13 @@
 import { getInput, getMultilineInput } from "@actions/core";
 import { AIProviderType } from "./ai";
 
+/** Parse a string as a positive integer, returning defaultVal if invalid or <= 0 */
+function parsePositiveInt(value: string | undefined, defaultVal: number): number {
+  if (!value) return defaultVal;
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : defaultVal;
+}
+
 export class Config {
   public llmApiKey: string | undefined;
   public llmModel: string | undefined;
@@ -79,13 +86,14 @@ export class Config {
     const allowTitle = process.env.ALLOW_TITLE_UPDATE || getInput('allow_title_update') || 'true';
     this.allowTitleUpdate = String(allowTitle).toLowerCase() === 'true';
 
-    const maxCodeblockLinesEnv = process.env.REVIEW_MAX_CODEBLOCK_LINES || getInput('max_codeblock_lines');
-    const parsedMaxCode = maxCodeblockLinesEnv && parseInt(maxCodeblockLinesEnv, 10);
-    this.maxCodeblockLines = Number.isFinite(parsedMaxCode as any) && (parsedMaxCode as any)! > 0 ? (parsedMaxCode as any) : 60;
-
-    const maxReviewCharsEnv = process.env.REVIEW_MAX_REVIEW_CHARS || getInput('max_review_chars');
-    const parsedMaxReviewChars = maxReviewCharsEnv && parseInt(maxReviewCharsEnv, 10);
-    this.maxReviewChars = Number.isFinite(parsedMaxReviewChars as any) && (parsedMaxReviewChars as any)! > 0 ? (parsedMaxReviewChars as any) : 725000;
+    this.maxCodeblockLines = parsePositiveInt(
+      process.env.REVIEW_MAX_CODEBLOCK_LINES || getInput('max_codeblock_lines'),
+      60
+    );
+    this.maxReviewChars = parsePositiveInt(
+      process.env.REVIEW_MAX_REVIEW_CHARS || getInput('max_review_chars'),
+      725000
+    );
 
     // SAP AI Core configuration
     this.sapAiCoreClientId = process.env.SAP_AI_CORE_CLIENT_ID;
