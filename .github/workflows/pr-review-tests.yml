@@ -5,6 +5,11 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - '.vscode/**'
+      - '.gitignore'
+      - '.github/**'
 
 permissions:
   contents: read

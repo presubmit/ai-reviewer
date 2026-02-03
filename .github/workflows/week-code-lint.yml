@@ -35,6 +35,3 @@ jobs:
           VALIDATE_TRIVY: false
           SUPPRESS_POSSUM: true
           LINTER_RULES_PATH: /
-          PYTHON_BLACK_CONFIG_FILE: pyproject.toml
-          PYTHON_FLAKE8_CONFIG_FILE: .flake8
-          PYTHON_PYLINT_CONFIG_FILE: .pylintrc
