@@ -3,7 +3,7 @@ name: Code Lint
 
 on:
   schedule:
-    - cron: '0 14 30 * 1'
+    - cron: "0 14 30 * 1"
   workflow_dispatch: {}
 
 permissions: read-all
@@ -25,7 +25,6 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-
       - name: Super-linter
         uses: super-linter/super-linter/slim@12562e48d7059cf666c43a4ecb0d3b5a2b31bd9e # v8.4.0
         env:
@@ -36,3 +35,4 @@ jobs:
           VALIDATE_TRIVY: false
           SUPPRESS_POSSUM: true
           LINTER_RULES_PATH: /
+
