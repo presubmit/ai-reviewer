@@ -7,7 +7,6 @@ node_modules/
 
 # Build outputs
 *.tsbuildinfo
-*-lock.yaml
 
 # IDE and editor files
 .idea/
@@ -21,3 +20,6 @@ node_modules/
 *.temp
 *.sh
 /dry
+
+# Distribution Artifacts
+dist/

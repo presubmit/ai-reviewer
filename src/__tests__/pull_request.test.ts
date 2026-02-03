@@ -129,7 +129,7 @@ describe('Pull Request Handler', () => {
         pull_request: {
           number: 123,
           title: 'Test PR',
-          body: 'Test description @presubmit skip',
+          body: 'Test description /aireview skip',
           head: { sha: 'head-sha' },
           base: { sha: 'base-sha' }
         }

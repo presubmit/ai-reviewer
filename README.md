@@ -167,8 +167,8 @@ Make sure to replace `https://github.example.com` with your actual GitHub Enterp
 
 ### ⚙️ Configurable
 
-- Mention `@presubmit` in PR title for auto-generation
-- Disable reviews with `@presubmit ignore` comment
+- Mention `/aireview` in PR title for auto-generation
+- Disable reviews with `/aireview ignore` comment
 - Configurable review depth and focus areas
 - Customizable rules and preferences
 

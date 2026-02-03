@@ -97,6 +97,9 @@ describe('Config', () => {
   });
 
   test('loads GitHub Enterprise Server URLs from action inputs', () => {
+    delete process.env.GITHUB_API_URL;
+    delete process.env.GITHUB_SERVER_URL;
+
     process.env.GITHUB_TOKEN = 'test-token';
     process.env.LLM_API_KEY = 'test-api-key';
     process.env.LLM_MODEL = 'test-model';

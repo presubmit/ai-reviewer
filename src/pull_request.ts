@@ -164,10 +164,9 @@ export async function handlePullRequest() {
   });
   info(`generated pull request summary: ${summary.title}`);
 
-  // Update PR title if @presubmitai is mentioned in the title
+  // Update PR title if /aireview is mentioned in the title
   if (
-    pull_request.title.includes("@presubmitai") ||
-    pull_request.title.includes("@presubmit")
+    pull_request.title.includes("/aireview")
   ) {
     info(`title contains mention of presubmit.ai, so generating a new title`);
     if (IS_DRY_RUN) {
@@ -350,14 +349,10 @@ async function submitReview(
 
 function shouldIgnorePullRequest(pull_request: { body?: string }) {
   const ignorePhrases = [
-    "@presubmit ignore",
-    "@presubmit: ignore",
-    "@presubmit skip",
-    "@presubmit: skip",
-    "@presubmitai ignore",
-    "@presubmitai: ignore",
-    "@presubmitai skip",
-    "@presubmitai: skip",
+    "/aireview ignore",
+    "/aireview: ignore",
+    "/aireview skip",
+    "/aireview: skip"
   ];
   const bodyLower = (pull_request.body ?? "").toLowerCase();
 
