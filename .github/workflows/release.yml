@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -68,7 +69,7 @@ jobs:
         if: steps.semrel.outputs.new_release_published == 'true'
         run: |
           set -euo pipefail
-          VERSION="${{ steps.semrel.outputs.new_release_version }}"
+          VERSION="${STEPS_SEMREL_OUTPUTS_NEW_RELEASE_VERSION}"
           MAJOR="v${VERSION%%.*}"
 
           git config user.name "github-actions[bot]"
@@ -76,3 +77,5 @@ jobs:
 
           git tag -fa "$MAJOR" -m "Update $MAJOR"
           git push origin "$MAJOR" --force
+        env:
+          STEPS_SEMREL_OUTPUTS_NEW_RELEASE_VERSION: ${{ steps.semrel.outputs.new_release_version }}
