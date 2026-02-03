@@ -354,6 +354,7 @@ function shouldIgnorePullRequest(pull_request: { body?: string }) {
     "/aireview skip",
     "/aireview: skip"
   ];
+  
   const bodyLower = (pull_request.body ?? "").toLowerCase();
 
   for (const phrase of ignorePhrases) {
