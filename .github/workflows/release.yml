@@ -43,7 +43,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Test
-        run: pnpm test --if-present
+        run: pnpm test
 
       - name: Build (generates dist/)
         run: pnpm build
