@@ -67,8 +67,7 @@ export function isThreadRelevant(thread: ReviewCommentThread): boolean {
   return thread.comments.some(
     (c) =>
       c.body.includes(COMMENT_SIGNATURE) ||
-      c.body.includes("@presubmitai") ||
-      c.body.includes("@presubmit")
+      c.body.includes("/aireview")
   );
 }
 
