@@ -3,7 +3,7 @@ name: Code Lint
 
 on:
   schedule:
-    - cron: "0 14 30 * 1"
+    - cron: '0 14 30 * 1'
   workflow_dispatch: {}
 
 permissions: read-all
