@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v1.0.0...v2.0.0) (2026-02-03)
+
+### ⚠ BREAKING CHANGES
+
+* changed keywork to /aireview
+
+### Features
+
+* changed keywork to /aireview ([12cac0e](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/12cac0e4bae9e57e4db66dcbf020f8fe9c5b2f5a))
+
 ## 1.0.0 (2026-02-03)
 
 ### Features
