@@ -8,7 +8,9 @@ on:
       - '.vscode/**'
       - '.gitignore'
       - '.github/**'
-
+      - '.*'
+      - '**/.*'
+      
 permissions:
   contents: write
   issues: write
