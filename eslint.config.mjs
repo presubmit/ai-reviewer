@@ -21,7 +21,6 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
-  // 1. Global Ignores
   globalIgnores([
     '!**/.*',
     '**/node_modules/.*',
@@ -32,8 +31,11 @@ export default defineConfig([
     '**/coverage/**',
   ]),
 
-  // 2. Base Configuration (JS Recommended + Plugins + Globals)
   {
+    // Global Settings
+    settings: {
+      react: { version: 'detect' }, // Fixes the React version warning
+    },
     extends: compat.extends('eslint:recommended'),
     plugins: { n, prettier },
     languageOptions: {
@@ -43,31 +45,28 @@ export default defineConfig([
         ...globals.node,
       },
     },
-  },
-
-  // 3. JSON / JSONC / JSON5 (Grouped for cleanliness)
-  {
-    files: ['**/*.json', '**/*.jsonc', '**/*.json5'],
-    extends: compat.extends('plugin:jsonc/recommended-with-jsonc'),
-    languageOptions: {
-      parser: jsoncParser,
+    rules: {
+      'prettier/prettier': 'error',
+      'n/no-process-exit': 'off', // Common in CLI/Actions
     },
   },
 
-  // 4. JavaScript & React
+  {
+    files: ['**/*.json', '**/*.jsonc', '**/*.json5'],
+    extends: compat.extends('plugin:jsonc/recommended-with-jsonc'),
+    languageOptions: { parser: jsoncParser },
+  },
+
   {
     files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.jsx'],
     extends: compat.extends('plugin:react/recommended'),
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parserOptions: {
-        ecmaFeatures: { jsx: true, modules: true },
-      },
+      parserOptions: { ecmaFeatures: { jsx: true, modules: true } },
     },
   },
 
-  // 5. TypeScript (The core of a GitHub Action)
   {
     files: ['**/*.ts', '**/*.cts', '**/*.mts', '**/*.tsx'],
     extends: compat.extends(
@@ -84,8 +83,18 @@ export default defineConfig([
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
+    rules: {
+      // FIX: Disable module resolution checks because TS handles this
+      'n/no-missing-import': 'off',
+      'n/no-unpublished-import': 'off',
+      'n/no-extraneous-import': 'off',
+
+      // FIX: Relax strict types for Action development
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'prefer-const': 'warn',
+    },
   },
 
-  // 6. Vue (Native Flat Config)
   ...pluginVue.configs['flat/recommended'],
 ]);
