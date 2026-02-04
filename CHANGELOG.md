@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v2.0.1...v2.0.2) (2026-02-04)
+
+### Bug Fixes
+
+* help find lost comment threads ([#6](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/issues/6)) ([13f7e79](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/13f7e7930a19a637848237995c53f95b460e72ae))
+
 ## [2.0.1](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v2.0.0...v2.0.1) (2026-02-04)
 
 ### Bug Fixes
