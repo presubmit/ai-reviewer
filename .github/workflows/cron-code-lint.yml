@@ -1,14 +1,15 @@
 ---
-name: PR - Code Lint
+name: Code Lint
 
 on:
-  push: {}
-  pull_request: {}
+  schedule:
+    - cron: '0 14 30 * 1'
+  workflow_dispatch: {}
 
 permissions: read-all
 
 jobs:
-  pr-code-lint:
+  code-lint:
     name: Lint
     runs-on: ubuntu-latest
 
@@ -19,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.0.1
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -28,14 +29,11 @@ jobs:
         uses: super-linter/super-linter/slim@12562e48d7059cf666c43a4ecb0d3b5a2b31bd9e # v8.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_CHECKOV: false
-          VALIDATE_JSCPD: false
           VALIDATE_PYTHON_PYINK: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
           VALIDATE_TRIVY: false
           SUPPRESS_POSSUM: true
-          LINTER_RULES_PATH: .
+          LINTER_RULES_PATH: /
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
           SPELL_CODESPELL_CONFIG_FILE: .codespellrc

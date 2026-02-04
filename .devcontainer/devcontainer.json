@@ -1,14 +1,30 @@
 {
-	"name": "Ubuntu",
-	"image": "mcr.microsoft.com/devcontainers/base:noble",
-	"features": {
-		"ghcr.io/devcontainers/features/node:1": {
-			"version": "lts"
-		},
-		"ghcr.io/devcontainers-community/npm-features/prettier:1": {},
-		"ghcr.io/devcontainers-extra/features/npm-package:1": {},
-		"ghcr.io/devcontainers-extra/features/typescript:2": {},
-		"ghcr.io/devcontainers-extra/features/jest:2": {}
-	},
-	"postCreateCommand": "bash -i -c 'nvm install'"
+  "name": "Ubuntu",
+  "image": "mcr.microsoft.com/devcontainers/base:noble",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "lts",
+      "pnpmVersion": "latest",
+      "nvmVersion": "latest"
+    },
+    "ghcr.io/devcontainers-community/npm-features/prettier:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/npm-package:1": {
+      "package": "typescript",
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/typescript:2": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/jest:2": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "installTools": true,
+      "version": "latest"
+    }
+  },
+  "postCreateCommand": "bash -i -c 'nvm install'"
 }

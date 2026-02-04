@@ -1,3 +1,7 @@
+<!-- textlint-disable -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable MD024 MD041 -->
+
 ## [2.0.0](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v1.0.0...v2.0.0) (2026-02-03)
 
 ### ⚠ BREAKING CHANGES
@@ -26,3 +30,6 @@
 * tests ([157be8d](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/157be8ddd16fe7a423ca587ba2e7836babadc9e4))
 * tests ([4f7924b](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/4f7924b4313a9ccd3518d52d63e161ed9e22ef0a))
 * typo & error message handling ([3c72a89](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/3c72a896fb4a9c16c025dd002f6f427c036b7311))
+
+
+<!-- prettier-ignore-end -->

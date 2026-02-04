@@ -1,3 +1,5 @@
+# Welcome
+
 <div align="center">
   <h1>
     Presubmit - AI Code Reviewer
@@ -11,7 +13,6 @@
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/presubmitai?style=social)](https://x.com/intent/follow?screen_name=presubmitai)
 
 </div>
-
 
 <br/>
 
@@ -98,7 +99,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: "claude-sonnet-4-5"
+          LLM_MODEL: 'claude-sonnet-4-5'
 ```
 
 The action requires:
@@ -113,13 +114,13 @@ The action requires:
 To use OpenRouter or other OpenAI-compatible providers with the `ai-sdk` provider, add the `LLM_BASE_URL` environment variable:
 
 ```yaml
-      - uses: presubmit/ai-reviewer@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: "openai/gpt-4o-mini"
-          LLM_PROVIDER: "ai-sdk"
-          LLM_BASE_URL: "https://openrouter.ai/api/v1"
+- uses: presubmit/ai-reviewer@latest
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+    LLM_MODEL: 'openai/gpt-4o-mini'
+    LLM_PROVIDER: 'ai-sdk'
+    LLM_BASE_URL: 'https://openrouter.ai/api/v1'
 ```
 
 **Note**: This configuration only works with `LLM_PROVIDER=ai-sdk`. It supports any OpenAI-compatible API including OpenRouter, Anyscale, Together AI, and others. The `sap-ai-sdk` provider uses its own `SAP_AI_CORE_BASE_URL` configuration instead.
@@ -129,19 +130,19 @@ To use OpenRouter or other OpenAI-compatible providers with the `ai-sdk` provide
 If you're using GitHub Enterprise Server, you can configure the action to work with your instance by adding these environment variables:
 
 ```yaml
-      - uses: presubmit/ai-reviewer@latest
-        env:
-          GITHUB_API_URL: "https://github.example.com/api/v3"
-          GITHUB_SERVER_URL: "https://github.example.com"
+- uses: presubmit/ai-reviewer@latest
+  env:
+    GITHUB_API_URL: 'https://github.example.com/api/v3'
+    GITHUB_SERVER_URL: 'https://github.example.com'
 ```
 
 You can also configure these settings using input parameters:
 
 ```yaml
-      - uses: presubmit/ai-reviewer@latest
-        with:
-          github_api_url: "https://github.example.com/api/v3"
-          github_server_url: "https://github.example.com"
+- uses: presubmit/ai-reviewer@latest
+  with:
+    github_api_url: 'https://github.example.com/api/v3'
+    github_server_url: 'https://github.example.com'
 ```
 
 Make sure to replace `https://github.example.com` with your actual GitHub Enterprise Server URL.
@@ -154,7 +155,7 @@ Make sure to replace `https://github.example.com` with your actual GitHub Enterp
 
 - **In-depth Analysis**: Line-by-line review with context-aware suggestions
 - **Auto PR Summary**: Concise, meaningful summaries of changes
-- **Code Quality**: Catches bugs, anti-patterns, and style issues
+- **Code Quality**: Catches bugs, antipatterns, and style issues
 - **Interactive**: Responds to questions and clarifications in comments
 
 ### 🛡️ Security & Quality
@@ -190,7 +191,7 @@ Run the reviewer locally against real PRs using your GitHub authentication.
 
 - Node.js 18+
 - GitHub CLI authenticated: `gh auth login`
-- `.env` file at repo root with:
+- `.env` file at repository root with:
   - `LLM_API_KEY=...` (your API key)
   - `LLM_MODEL=...` (e.g., `claude-3-5-sonnet-20241022`, `gpt-4o-mini`)
   - Optional: `LLM_PROVIDER=ai-sdk` (default)
@@ -206,16 +207,19 @@ pnpm build
 ### Commands
 
 **List PRs:**
+
 ```bash
 pnpm review -- --list-prs --state open --limit 5
 ```
 
 **Review a PR (dry-run):**
+
 ```bash
 pnpm review -- --pr 123 --dry-run
 ```
 
 **Save output to file:**
+
 ```bash
 # Auto-generates filename: dry/pr-123.txt
 pnpm review -- --pr 123 --dry-run --out
@@ -225,11 +229,13 @@ pnpm review -- --pr 123 --dry-run --out my-review.txt
 ```
 
 **Specify repository:**
+
 ```bash
 pnpm review -- --pr 123 --owner myorg --repo myrepo --dry-run
 ```
 
 Or set in `.env`:
+
 ```env
 GITHUB_REPOSITORY=myorg/myrepo
 ```
