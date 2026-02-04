@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v2.0.0...v2.0.1) (2026-02-04)
+
+### Bug Fixes
+
+* change pipeline triggers ([941aa06](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/941aa069e07739836610f447c00223543fb0a567))
+* rename presubmit comment  ([#4](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/issues/4)) ([ed4c26b](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/commit/ed4c26b41d86d59407bec54b2eacd034fed0e340))
+
 <!-- @generated -->
 
 ## [2.0.0](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v1.0.0...v2.0.0) (2026-02-03)
