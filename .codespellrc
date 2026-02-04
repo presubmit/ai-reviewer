@@ -1,2 +1,2 @@
 [codespell]
-skip = CHANGELOG.md,dist/**
+skip = */CHANGELOG.md,*/dist/**
