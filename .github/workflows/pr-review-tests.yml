@@ -10,8 +10,6 @@ on:
       - '.vscode/**'
       - '.gitignore'
       - '.github/**'
-      - '.*'
-      - '**/.*'
 
 permissions:
   contents: read
