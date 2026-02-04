@@ -11,16 +11,8 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
-  ignorePatterns: [
-    'dist/',
-    'dist/**',
-    'node_modules/',
-    'coverage/',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  ignorePatterns: ['dist/', 'dist/**', 'node_modules/', 'coverage/'],
   rules: {
     // Optional but common in Actions repos
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
