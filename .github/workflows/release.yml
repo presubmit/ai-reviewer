@@ -52,6 +52,9 @@ jobs:
       - name: Build (generates dist/)
         run: pnpm build
 
+      - name: Un-ignore dist/ for release
+        run: sed -i '/dist\//d' .gitignore
+
       - name: Semantic Release
         id: semrel
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 #v6.0.0

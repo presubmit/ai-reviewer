@@ -153,7 +153,7 @@ export async function handlePullRequest() {
 
   // Update PR title if /aireview is mentioned in the title
   if (pull_request.title.includes('/aireview')) {
-    info(`title contains mention of presubmit.ai, so generating a new title`);
+    info(`title contains mention of aireview, so generating a new title`);
     if (IS_DRY_RUN) {
       info(`DRY-RUN: would update PR title to: ${summary.title}`);
     } else {

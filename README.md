@@ -72,7 +72,7 @@ Interactive discussions help clarify implementation details:
 Add this GitHub Action to your repository by creating `.github/workflows/presubmit.yml`:
 
 ```yaml
-name: Presubmit.ai
+name: Ai-Review
 
 permissions:
   contents: read
