@@ -4,7 +4,7 @@ import {
   buildReviewSummary,
   OVERVIEW_MESSAGE_SIGNATURE,
   PAYLOAD_TAG_OPEN,
-  PAYLOAD_TAG_CLOSE
+  PAYLOAD_TAG_CLOSE,
 } from '../messages';
 import { FileDiff } from '../diff';
 import { Context } from '@actions/github/lib/context';
@@ -16,9 +16,9 @@ jest.mock('@actions/github', () => ({
   context: {
     repo: {
       owner: 'test-owner',
-      repo: 'test-repo'
-    }
-  }
+      repo: 'test-repo',
+    },
+  },
 }));
 
 jest.mock('../config', () => ({
@@ -30,31 +30,31 @@ jest.mock('../config', () => ({
     styleGuideRules: '',
     githubApiUrl: 'https://api.github.com',
     githubServerUrl: 'https://github.com',
-    loadInputs: jest.fn()
-  }
+    loadInputs: jest.fn(),
+  },
 }));
 
 describe('Messages', () => {
   const mockContext = {
-    repo: { owner: 'test-owner', repo: 'test-repo' }
+    repo: { owner: 'test-owner', repo: 'test-repo' },
   } as Context;
-  
+
   const mockFileDiffs: FileDiff[] = [
     {
       filename: 'src/test1.ts',
       status: 'modified',
-      hunks: [{ startLine: 1, endLine: 5, diff: '@@ -1,3 +1,5 @@\n test\n+added\n+more' }]
+      hunks: [{ startLine: 1, endLine: 5, diff: '@@ -1,3 +1,5 @@\n test\n+added\n+more' }],
     },
     {
       filename: 'src/test2.ts',
       status: 'added',
-      hunks: [{ startLine: 1, endLine: 3, diff: '@@ -0,0 +1,3 @@\n+new file\n+content\n+here' }]
-    }
+      hunks: [{ startLine: 1, endLine: 3, diff: '@@ -0,0 +1,3 @@\n+new file\n+content\n+here' }],
+    },
   ];
 
   const mockCommits = [
     { sha: 'abc123', commit: { message: 'First commit' } },
-    { sha: 'def456', commit: { message: 'Second commit' } }
+    { sha: 'def456', commit: { message: 'Second commit' } },
   ];
 
   test('buildLoadingMessage formats correctly', () => {
@@ -78,9 +78,9 @@ describe('Messages', () => {
       description: 'This is a test PR',
       files: [
         { filename: 'src/test1.ts', summary: 'Modified test file', title: 'Test 1' },
-        { filename: 'src/test2.ts', summary: 'Added new file', title: 'Test 2' }
+        { filename: 'src/test2.ts', summary: 'Added new file', title: 'Test 2' },
       ],
-      type: ['ENHANCEMENT']
+      type: ['ENHANCEMENT'],
     };
 
     const message = buildOverviewMessage(mockSummary, ['commit1', 'commit2']);
@@ -107,8 +107,8 @@ describe('Messages', () => {
         header: 'Potential issue',
         content: 'This might cause a problem',
         label: 'possible bug',
-        critical: true
-      }
+        critical: true,
+      },
     ];
 
     const mockSkippedComments: AIComment[] = [
@@ -120,8 +120,8 @@ describe('Messages', () => {
         header: 'Style suggestion',
         content: 'Consider using a different style',
         label: 'style',
-        critical: false
-      }
+        critical: false,
+      },
     ];
 
     const summary = buildReviewSummary(
@@ -129,7 +129,7 @@ describe('Messages', () => {
       mockFileDiffs,
       mockCommits,
       mockActionableComments,
-      mockSkippedComments
+      mockSkippedComments,
     );
 
     expect(summary).toContain('Pull request needs attention');
@@ -146,14 +146,8 @@ describe('Messages', () => {
   });
 
   test('buildReviewSummary formats correctly with no comments', () => {
-    const summary = buildReviewSummary(
-      mockContext,
-      mockFileDiffs,
-      mockCommits,
-      [],
-      []
-    );
-    
+    const summary = buildReviewSummary(mockContext, mockFileDiffs, mockCommits, [], []);
+
     expect(summary).toContain('LGTM!');
     expect(summary).toContain('Actionable Comments (0)');
     expect(summary).toContain('Skipped Comments (0)');
@@ -165,7 +159,7 @@ describe('Messages', () => {
     const originalServerUrl = config.githubServerUrl;
     Object.defineProperty(config, 'githubServerUrl', {
       value: 'https://github.example.com',
-      writable: true
+      writable: true,
     });
 
     const message = buildLoadingMessage('base-sha', mockCommits, mockFileDiffs);
@@ -175,7 +169,7 @@ describe('Messages', () => {
     // Restore the original value
     Object.defineProperty(config, 'githubServerUrl', {
       value: originalServerUrl,
-      writable: true
+      writable: true,
     });
   });
 });

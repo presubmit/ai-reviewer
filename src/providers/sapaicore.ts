@@ -1,8 +1,8 @@
-import axios from "axios";
-import { AIProvider, InferenceConfig } from "@/ai";
-import config from "../config";
-import { info } from "@actions/core";
-import { StructuredOutputParser } from "@langchain/core/output_parsers";
+import axios from 'axios';
+import { AIProvider, InferenceConfig } from '@/ai';
+import config from '../config';
+import { info } from '@actions/core';
+import { StructuredOutputParser } from '@langchain/core/output_parsers';
 
 interface Deployment {
   id: string;
@@ -31,34 +31,34 @@ export class SAPAIProvider implements AIProvider {
     this.modelName = modelName;
 
     if (!config.sapAiCoreClientId) {
-      throw new Error("SAP_AI_CORE_CLIENT_ID is not set");
+      throw new Error('SAP_AI_CORE_CLIENT_ID is not set');
     }
     if (!config.sapAiCoreClientSecret) {
-      throw new Error("SAP_AI_CORE_CLIENT_SECRET is not set");
+      throw new Error('SAP_AI_CORE_CLIENT_SECRET is not set');
     }
     if (!config.sapAiCoreBaseUrl) {
-      throw new Error("SAP_AI_CORE_BASE_URL is not set");
+      throw new Error('SAP_AI_CORE_BASE_URL is not set');
     }
     if (!config.sapAiCoreTokenUrl) {
-      throw new Error("SAP_AI_CORE_TOKEN_URL is not set");
+      throw new Error('SAP_AI_CORE_TOKEN_URL is not set');
     }
     this.clientId = config.sapAiCoreClientId;
     this.clientSecret = config.sapAiCoreClientSecret;
     this.baseUrl = config.sapAiCoreBaseUrl;
     this.tokenUrl = config.sapAiCoreTokenUrl;
-    this.resourceGroup = config.sapAiResourceGroup || "default";
+    this.resourceGroup = config.sapAiResourceGroup || 'default';
   }
 
   // Authentication method
   private async authenticate(): Promise<Token> {
     const payload = {
-      grant_type: "client_credentials",
+      grant_type: 'client_credentials',
       client_id: this.clientId,
       client_secret: this.clientSecret,
     };
 
     const response = await axios.post(this.tokenUrl, payload, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
     const token = response.data as Token;
@@ -79,8 +79,8 @@ export class SAPAIProvider implements AIProvider {
     const token = await this.getToken();
     const headers = {
       Authorization: `Bearer ${token}`,
-      "AI-Resource-Group": this.resourceGroup,
-      "Content-Type": "application/json",
+      'AI-Resource-Group': this.resourceGroup,
+      'Content-Type': 'application/json',
     };
 
     const url = `${this.baseUrl}/lm/deployments?$top=10000&$skip=0`;
@@ -90,7 +90,7 @@ export class SAPAIProvider implements AIProvider {
       const deployments = response.data.resources;
 
       return deployments
-        .filter((deployment: any) => deployment.targetStatus === "RUNNING")
+        .filter((deployment: any) => deployment.targetStatus === 'RUNNING')
         .map((deployment: any) => {
           const model = deployment.details?.resources?.backend_details?.model;
           if (!model?.name || !model?.version) {
@@ -117,8 +117,8 @@ export class SAPAIProvider implements AIProvider {
     }
 
     const deployment = this.deployments.find((d) => {
-      const deploymentBaseName = d.name.split(":")[0].toLowerCase();
-      const modelBaseName = modelId.split(":")[0].toLowerCase();
+      const deploymentBaseName = d.name.split(':')[0].toLowerCase();
+      const modelBaseName = modelId.split(':')[0].toLowerCase();
       return deploymentBaseName === modelBaseName;
     });
 
@@ -133,33 +133,26 @@ export class SAPAIProvider implements AIProvider {
   private hasDeploymentForModel(modelId: string): boolean {
     return (
       this.deployments?.some(
-        (d) =>
-          d.name.split(":")[0].toLowerCase() ===
-          modelId.split(":")[0].toLowerCase()
+        (d) => d.name.split(':')[0].toLowerCase() === modelId.split(':')[0].toLowerCase(),
       ) ?? false
     );
   }
 
   // Helper methods to identify model types
   private isAnthropicModel(modelName: string): boolean {
-    return modelName.includes("claude");
+    return modelName.includes('claude');
   }
 
   private isClaude37Model(modelName: string): boolean {
-    return modelName.includes("claude-3.7");
+    return modelName.includes('claude-3.7');
   }
 
   private isOpenAIModel(modelName: string): boolean {
-    return modelName.includes("gpt") || modelName.startsWith("o");
+    return modelName.includes('gpt') || modelName.startsWith('o');
   }
 
   // Main inference method
-  async runInference({
-    prompt,
-    temperature,
-    system,
-    schema,
-  }: InferenceConfig): Promise<any> {
+  async runInference({ prompt, temperature, system, schema }: InferenceConfig): Promise<any> {
     // Get token and deployment
     const token = await this.getToken();
     const deploymentId = await this.getDeploymentForModel(this.modelName);
@@ -167,8 +160,8 @@ export class SAPAIProvider implements AIProvider {
     // Prepare headers
     const headers = {
       Authorization: `Bearer ${token}`,
-      "AI-Resource-Group": this.resourceGroup,
-      "Content-Type": "application/json",
+      'AI-Resource-Group': this.resourceGroup,
+      'Content-Type': 'application/json',
     };
 
     // Prepare system prompt to include target schema
@@ -190,14 +183,14 @@ export class SAPAIProvider implements AIProvider {
         url = `${this.baseUrl}/inference/deployments/${deploymentId}/converse`;
         payload = {
           system: system ? [{ text: system }] : undefined,
-          messages: [{ role: "user", content: [{ text: prompt }] }],
+          messages: [{ role: 'user', content: [{ text: prompt }] }],
         };
       } else {
         // Use invoke endpoint for other Anthropic models
         url = `${this.baseUrl}/inference/deployments/${deploymentId}/invoke`;
         payload = {
-          system: system || "",
-          messages: [{ role: "user", content: prompt }],
+          system: system || '',
+          messages: [{ role: 'user', content: prompt }],
         };
       }
     } else if (isOpenAIModel) {
@@ -205,8 +198,8 @@ export class SAPAIProvider implements AIProvider {
       url = `${this.baseUrl}/inference/deployments/${deploymentId}/chat/completions?api-version=2024-12-01-preview`;
       payload = {
         messages: [
-          { role: "system", content: system || "" },
-          { role: "user", content: prompt },
+          { role: 'system', content: system || '' },
+          { role: 'user', content: prompt },
         ],
         temperature: temperature || 0,
       };

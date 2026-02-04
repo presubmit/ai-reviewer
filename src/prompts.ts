@@ -1,8 +1,8 @@
-import { runPrompt } from "./ai";
-import { z } from "zod";
-import { formatFileDiff, File, FileDiff, generateFileCodeDiff } from "./diff";
-import { ReviewCommentThread } from "./comments";
-import config from "./config";
+import { runPrompt } from './ai';
+import { z } from 'zod';
+import { formatFileDiff, File, FileDiff, generateFileCodeDiff } from './diff';
+import { ReviewCommentThread } from './comments';
+import config from './config';
 
 type PullRequestSummaryPrompt = {
   prTitle: string;
@@ -22,9 +22,7 @@ export type PullRequestSummary = {
   type: string[];
 };
 
-export async function runSummaryPrompt(
-  pr: PullRequestSummaryPrompt
-): Promise<PullRequestSummary> {
+export async function runSummaryPrompt(pr: PullRequestSummaryPrompt): Promise<PullRequestSummary> {
   let systemPrompt = `You are a helpful assistant that summarizes Git Pull Requests (PRs).`;
 
   systemPrompt += `Your task is to provide a full description for the PR content - title, type, description and affected file summaries.\n`;
@@ -47,51 +45,47 @@ Summarize the following PR:
 ${pr.prDescription}
 </Original PR Description>
 <Commit Messages>
-${pr.commitMessages.join("\n")}
+${pr.commitMessages.join('\n')}
 </Commit Messages>
 
 <Affected Files>
-${pr.files.map((file) => `- ${file.status}: ${file.filename}`).join("\n")}
+${pr.files.map((file) => `- ${file.status}: ${file.filename}`).join('\n')}
 </Affected Files>
 
 <File Diffs>
-${pr.files.map((file) => formatFileDiff(file)).join("\n\n")}
+${pr.files.map((file) => formatFileDiff(file)).join('\n\n')}
 </File Diffs>
 
 Make sure each affected file is summarized and it's part of the returned JSON.
 `;
 
   const fileSchema = z.object({
-    filename: z.string().describe("The full file path of the relevant file"),
+    filename: z.string().describe('The full file path of the relevant file'),
     summary: z
       .string()
-      .describe(
-        "Concise summary of the file changes in markdown format (max 70 words)"
-      ),
+      .describe('Concise summary of the file changes in markdown format (max 70 words)'),
     title: z
       .string()
       .describe(
-        "An informative title for the changes in this file, describing its main theme (5-10 words)."
+        'An informative title for the changes in this file, describing its main theme (5-10 words).',
       ),
   });
 
   const schema = z.object({
     title: z
       .string()
-      .describe(
-        "Informative title of the PR, describing its main theme (10 words max)"
-      ),
+      .describe('Informative title of the PR, describing its main theme (10 words max)'),
     description: z
       .string()
-      .describe("Informative description of the PR, describing its main theme"),
+      .describe('Informative description of the PR, describing its main theme'),
     files: z
       .array(fileSchema)
-      .describe(
-        "List of files affected in the PR and summaries of their changes"
-      ),
+      .describe('List of files affected in the PR and summaries of their changes'),
     type: z
       .array(z.string())
-      .describe("One or more types that describe this PR's main theme. Example: BUG, TESTS, ENHANCEMENT, DOCUMENTATION, SECURITY, OTHER"),
+      .describe(
+        "One or more types that describe this PR's main theme. Example: BUG, TESTS, ENHANCEMENT, DOCUMENTATION, SECURITY, OTHER",
+      ),
   });
 
   return (await runPrompt({
@@ -129,11 +123,7 @@ type PullRequestReviewPrompt = {
   files: FileDiff[];
 };
 
-export async function runReviewPrompt(
-  pr: PullRequestReviewPrompt
-): Promise<PullRequestReview> {
-
-
+export async function runReviewPrompt(pr: PullRequestReviewPrompt): Promise<PullRequestReview> {
   let systemPrompt = `
 <IMPORTANT INSTRUCTIONS>
 You are an experienced senior software engineer tasked with reviewing a Git Pull Request (PR). Your goal is to provide comments to improve code quality, catch typos, potential bugs or security issues, and provide meaningful code suggestions when applicable. You should not make comments about adding comments, about code formatting, about code style or give implementation suggestions.
@@ -181,10 +171,12 @@ __new hunk__
 - If you cannot find any actionable comments, return an empty array.
 - VERY IMPORTANT: Keep in mind you're only seeing part of the code, and the code might be incomplete. Do not make assumptions about the code outside the diff.
 
-${config.styleGuideRules && config.styleGuideRules.length > 0
-      ? `Guidelines for the review, such as style guides, conventions, or best practices, violating the following guidelines should result in a critical comment:
+${
+  config.styleGuideRules && config.styleGuideRules.length > 0
+    ? `Guidelines for the review, such as style guides, conventions, or best practices, violating the following guidelines should result in a critical comment:
 ${config.styleGuideRules}`
-      : ''}
+    : ''
+}
 </IMPORTANT INSTRUCTIONS>
 
 <EXAMPLE>
@@ -214,7 +206,6 @@ ${config.styleGuideRules}`
 </EXAMPLE>
 `;
 
-
   let userPrompt = `
 <PR title>
 ${pr.prTitle}
@@ -229,46 +220,46 @@ ${pr.prSummary}
 </PR Summary>
 
 <PR File Diffs>
-${pr.files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
+${pr.files.map((file) => generateFileCodeDiff(file)).join('\n\n')}
 </PR File Diffs>
 `;
 
   const commentSchema = z.object({
-    file: z.string().describe("The full file path of the relevant file"),
+    file: z.string().describe('The full file path of the relevant file'),
     start_line: z
       .number()
       .describe(
-        "The relevant line number, from a '__new hunk__' section, where the comment starts (inclusive). Should correspond to the prefix of the first line in the 'highlighted_code' snippet. If comment spans a single line, it should equal the 'end_line'"
+        "The relevant line number, from a '__new hunk__' section, where the comment starts (inclusive). Should correspond to the prefix of the first line in the 'highlighted_code' snippet. If comment spans a single line, it should equal the 'end_line'",
       ),
     end_line: z
       .number()
       .describe(
-        "The relevant line number, from a '__new hunk__' section, where the comment ends (inclusive). Should correspond to the prefix of the last line in the 'highlighted_code' snippet. If comment spans a single line, it should equal the 'start_line'"
+        "The relevant line number, from a '__new hunk__' section, where the comment ends (inclusive). Should correspond to the prefix of the last line in the 'highlighted_code' snippet. If comment spans a single line, it should equal the 'start_line'",
       ),
     content: z
       .string()
       .describe(
-        "An actionable comment to enhance, improve or fix the new code introduced in the PR. Use markdown formatting."
+        'An actionable comment to enhance, improve or fix the new code introduced in the PR. Use markdown formatting.',
       ),
     header: z
       .string()
       .describe(
-        "A concise, single-sentence overview of the comment. Focus on the 'what'. Be general, and avoid method or variable names."
+        "A concise, single-sentence overview of the comment. Focus on the 'what'. Be general, and avoid method or variable names.",
       ),
     highlighted_code: z
       .string()
       .describe(
-        "A short code snippet from a '__new hunk__' section that the comment is applicable for.Include only complete code lines, without line numbers. This snippet should represent the full specific PR code targeted for comment, at its first line should match 'startLine' and last line match 'endLine'. If the code snippet is a single line, that line should match both 'startLine' and 'endLine'"
+        "A short code snippet from a '__new hunk__' section that the comment is applicable for.Include only complete code lines, without line numbers. This snippet should represent the full specific PR code targeted for comment, at its first line should match 'startLine' and last line match 'endLine'. If the code snippet is a single line, that line should match both 'startLine' and 'endLine'",
       ),
     label: z
       .string()
       .describe(
-        "A single, descriptive label that best characterizes the suggestion type. Possible labels include 'security', 'possible bug', 'possible issue', 'performance', 'enhancement', 'best practice', 'maintainability', 'readability'. Other relevant labels are also acceptable."
+        "A single, descriptive label that best characterizes the suggestion type. Possible labels include 'security', 'possible bug', 'possible issue', 'performance', 'enhancement', 'best practice', 'maintainability', 'readability'. Other relevant labels are also acceptable.",
       ),
     critical: z
       .boolean()
       .describe(
-        "True if the comment is critical and the PR should not be merged without addressing the comment. False otherwise."
+        'True if the comment is critical and the PR should not be merged without addressing the comment. False otherwise.',
       ),
   });
 
@@ -278,33 +269,31 @@ ${pr.files.map((file) => generateFileCodeDiff(file)).join("\n\n")}
       .min(1)
       .max(5)
       .describe(
-        "Estimate, on a scale of 1-5 (inclusive), the time and effort required to review this PR by an experienced and knowledgeable developer. 1 means short and easy review , 5 means long and hard review. Take into account the size, complexity, quality, and the needed changes of the PR code diff."
+        'Estimate, on a scale of 1-5 (inclusive), the time and effort required to review this PR by an experienced and knowledgeable developer. 1 means short and easy review , 5 means long and hard review. Take into account the size, complexity, quality, and the needed changes of the PR code diff.',
       ),
     score: z
       .number()
       .min(0)
       .max(100)
       .describe(
-        "Rate this PR on a scale of 0-100 (inclusive), where 0 means the worst possible PR code, and 100 means PR code of the highest quality, without any bugs or performance issues, that is ready to be merged immediately and run in production at scale."
+        'Rate this PR on a scale of 0-100 (inclusive), where 0 means the worst possible PR code, and 100 means PR code of the highest quality, without any bugs or performance issues, that is ready to be merged immediately and run in production at scale.',
       ),
     has_relevant_tests: z
       .boolean()
-      .describe(
-        "True if the PR includes relevant tests added or updated. False otherwise."
-      ),
+      .describe('True if the PR includes relevant tests added or updated. False otherwise.'),
     security_concerns: z
       .string()
       .describe(
-        "Does this PR code introduce possible vulnerabilities such as exposure of sensitive information (e.g., API keys, secrets, passwords), or security concerns like SQL injection, XSS, CSRF, and others ? Answer 'No' (without explaining why) if there are no possible issues. If there are security concerns or issues, start your answer with a short header, such as: 'Sensitive information exposure: ...', 'SQL injection: ...' etc. Explain your answer. Be specific and give examples if possible"
+        "Does this PR code introduce possible vulnerabilities such as exposure of sensitive information (e.g., API keys, secrets, passwords), or security concerns like SQL injection, XSS, CSRF, and others ? Answer 'No' (without explaining why) if there are no possible issues. If there are security concerns or issues, start your answer with a short header, such as: 'Sensitive information exposure: ...', 'SQL injection: ...' etc. Explain your answer. Be specific and give examples if possible",
       ),
   });
 
   let schema = z.object({
-    review: reviewSchema.describe("The full review of the PR"),
+    review: reviewSchema.describe('The full review of the PR'),
     comments: z
       .array(commentSchema)
       .describe(
-        "Comments about possible bugs, security concerns, code quality, typos or regressions introduced in this PR."
+        'Comments about possible bugs, security concerns, code quality, typos or regressions introduced in this PR.',
       ),
   });
 
@@ -340,20 +329,15 @@ Comments from /aireview are yours.
 IMPORTANT: Do not respond with generic comments like "Thanks for the PR!" or "LGTM" or "Let me know if you need any help". If the input comment is not actionable, return an empty string. Do not offer to help unless asked.
 `;
 
-  const startLine =
-    commentThread.comments[0].start_line || commentThread.comments[0].line;
+  const startLine = commentThread.comments[0].start_line || commentThread.comments[0].line;
   const endLine = commentThread.comments[0].line;
-
 
   let userPrompt = `
 Below you'll see the full comment thread, but you should focus specifically on the last comment.
 <Comment Thread>
 ${commentThread.comments
-      .map(
-        (comment) =>
-          `<author>@${comment.user.login}</author>\n<comment>${comment.body}</comment>`
-      )
-      .join("\n")}
+  .map((comment) => `<author>@${comment.user.login}</author>\n<comment>${comment.body}</comment>`)
+  .join('\n')}
 </Comment Thread>
 
 <Comment Scope>
@@ -371,14 +355,10 @@ ${generateFileCodeDiff(commentFileDiff)}
   const schema = z.object({
     response_comment: z
       .string()
-      .describe(
-        "Your response to the comment in markdown format, starting by mentioning the user"
-      ),
+      .describe('Your response to the comment in markdown format, starting by mentioning the user'),
     action_requested: z
       .boolean()
-      .describe(
-        "True if the input comment required an action from you. False otherwise."
-      ),
+      .describe('True if the input comment required an action from you. False otherwise.'),
   });
 
   return (await runPrompt({

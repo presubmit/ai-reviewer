@@ -1,1 +1,1 @@
-export const throttling = jest.fn(); 
+export const throttling = jest.fn();

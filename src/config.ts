@@ -1,5 +1,5 @@
-import { getInput, getMultilineInput } from "@actions/core";
-import { AIProviderType } from "./ai";
+import { getInput, getMultilineInput } from '@actions/core';
+import { AIProviderType } from './ai';
 
 export class Config {
   public llmApiKey: string | undefined;
@@ -20,15 +20,15 @@ export class Config {
   constructor() {
     this.githubToken = process.env.GITHUB_TOKEN;
     if (!this.githubToken) {
-      throw new Error("GITHUB_TOKEN is not set");
+      throw new Error('GITHUB_TOKEN is not set');
     }
 
-    this.llmModel = process.env.LLM_MODEL || getInput("llm_model");
+    this.llmModel = process.env.LLM_MODEL || getInput('llm_model');
     if (!this.llmModel?.length) {
-      throw new Error("LLM_MODEL is not set");
+      throw new Error('LLM_MODEL is not set');
     }
 
-    this.llmProvider = process.env.LLM_PROVIDER || getInput("llm_provider");
+    this.llmProvider = process.env.LLM_PROVIDER || getInput('llm_provider');
     if (!this.llmProvider?.length) {
       this.llmProvider = AIProviderType.AI_SDK;
       console.log(`Using default LLM_PROVIDER '${this.llmProvider}'`);
@@ -38,11 +38,11 @@ export class Config {
     const isSapAiSdk = this.llmProvider === AIProviderType.SAP_AI_SDK;
     // SAP AI SDK does not require an API key
     if (!this.llmApiKey && !isSapAiSdk) {
-      throw new Error("LLM_API_KEY is not set");
+      throw new Error('LLM_API_KEY is not set');
     }
 
     const baseUrlFromEnv = process.env.LLM_BASE_URL;
-    const baseUrlFromInput = getInput("llm_base_url");
+    const baseUrlFromInput = getInput('llm_base_url');
     this.llmBaseUrl = baseUrlFromEnv || baseUrlFromInput || undefined;
 
     // SAP AI Core configuration
@@ -59,7 +59,7 @@ export class Config {
         !this.sapAiCoreBaseUrl)
     ) {
       throw new Error(
-        "SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL."
+        'SAP AI Core configuration is not set. Please set SAP_AI_CORE_CLIENT_ID, SAP_AI_CORE_CLIENT_SECRET, SAP_AI_CORE_TOKEN_URL, and SAP_AI_CORE_BASE_URL.',
       );
     }
 
@@ -72,29 +72,29 @@ export class Config {
     if (!process.env.DEBUG) {
       return;
     }
-    console.log("[debug] loading extra inputs from .env");
+    console.log('[debug] loading extra inputs from .env');
 
     this.styleGuideRules = process.env.STYLE_GUIDE_RULES;
   }
 
   public loadInputs() {
     if (process.env.DEBUG) {
-      console.log("[debug] skip loading inputs");
+      console.log('[debug] skip loading inputs');
       return;
     }
 
     // Custom style guide rules
     try {
-      const styleGuideRules = getMultilineInput("style_guide_rules") || [];
+      const styleGuideRules = getMultilineInput('style_guide_rules') || [];
       if (
         Array.isArray(styleGuideRules) &&
         styleGuideRules.length &&
         styleGuideRules[0].trim().length
       ) {
-        this.styleGuideRules = styleGuideRules.join("\n");
+        this.styleGuideRules = styleGuideRules.join('\n');
       }
     } catch (e) {
-      console.error("Error loading style guide rules:", e);
+      console.error('Error loading style guide rules:', e);
     }
   }
 }
@@ -104,28 +104,28 @@ export class Config {
 let configInstance: Config | null = null;
 
 // If not in test environment, create and configure the instance
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== 'test') {
   configInstance = new Config();
   configInstance.loadInputs();
 }
 
 // Export the instance or a function to create one for tests
-export default process.env.NODE_ENV === "test"
+export default process.env.NODE_ENV === 'test'
   ? {
       // Default values for tests
-      githubToken: "mock-token",
-      llmApiKey: "mock-api-key",
-      llmModel: "mock-model",
-      llmProvider: "mock-provider",
+      githubToken: 'mock-token',
+      llmApiKey: 'mock-api-key',
+      llmModel: 'mock-model',
+      llmProvider: 'mock-provider',
       llmBaseUrl: undefined,
-      styleGuideRules: "",
-      sapAiCoreClientId: "mock-client-id",
-      sapAiCoreClientSecret: "mock-client-secret",
-      sapAiCoreTokenUrl: "mock-token-url",
-      sapAiCoreBaseUrl: "mock-base-url",
-      sapAiResourceGroup: "default",
-      githubApiUrl: "https://api.github.com",
-      githubServerUrl: "https://github.com",
+      styleGuideRules: '',
+      sapAiCoreClientId: 'mock-client-id',
+      sapAiCoreClientSecret: 'mock-client-secret',
+      sapAiCoreTokenUrl: 'mock-token-url',
+      sapAiCoreBaseUrl: 'mock-base-url',
+      sapAiResourceGroup: 'default',
+      githubApiUrl: 'https://api.github.com',
+      githubServerUrl: 'https://github.com',
       loadInputs: jest.fn(),
     }
   : configInstance!;

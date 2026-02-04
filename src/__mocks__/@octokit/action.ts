@@ -13,4 +13,4 @@ export class Octokit {
   static plugin(...plugins: any[]) {
     return Octokit;
   }
-} 
+}

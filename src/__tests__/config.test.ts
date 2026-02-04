@@ -10,7 +10,7 @@ jest.mock('@actions/core', () => ({
   getInput: (...args: any[]) => mockGetInput(...args),
   getMultilineInput: (...args: any[]) => mockGetMultilineInput(...args),
   info: jest.fn(),
-  warning: jest.fn()
+  warning: jest.fn(),
 }));
 
 describe('Config', () => {

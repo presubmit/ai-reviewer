@@ -1,7 +1,7 @@
-import { AIProvider, InferenceConfig } from "@/ai";
-import config from "../config";
-import { info } from "@actions/core";
-import { generateObject } from "ai";
+import { AIProvider, InferenceConfig } from '@/ai';
+import config from '../config';
+import { info } from '@actions/core';
+import { generateObject } from 'ai';
 
 export class AISDKProvider implements AIProvider {
   private createAiFunc: any;
@@ -12,12 +12,7 @@ export class AISDKProvider implements AIProvider {
     this.modelName = modelName;
   }
 
-  async runInference({
-    prompt,
-    temperature,
-    system,
-    schema,
-  }: InferenceConfig): Promise<any> {
+  async runInference({ prompt, temperature, system, schema }: InferenceConfig): Promise<any> {
     const llm = this.createAiFunc({
       apiKey: config.llmApiKey,
       ...(config.llmBaseUrl && { baseURL: config.llmBaseUrl }),

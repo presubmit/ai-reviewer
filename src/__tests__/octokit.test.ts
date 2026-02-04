@@ -4,26 +4,26 @@ jest.mock('@octokit/action', () => {
     rest: {
       repos: {},
       pulls: {},
-      issues: {}
-    }
+      issues: {},
+    },
   }));
   // Add the static plugin method
   const mockPlugin = jest.fn().mockReturnValue(MockOctokit);
   Object.defineProperty(MockOctokit, 'plugin', {
-    value: mockPlugin
+    value: mockPlugin,
   });
 
   return {
-    Octokit: MockOctokit
+    Octokit: MockOctokit,
   };
 });
 
 jest.mock('@octokit/plugin-retry', () => ({
-  retry: jest.fn()
+  retry: jest.fn(),
 }));
 
 jest.mock('@octokit/plugin-throttling', () => ({
-  throttling: jest.fn()
+  throttling: jest.fn(),
 }));
 
 import { initOctokit } from '../octokit';
