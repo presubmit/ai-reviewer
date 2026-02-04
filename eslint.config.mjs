@@ -88,6 +88,7 @@ export default defineConfig([
       'n/no-missing-import': 'off',
       'n/no-unpublished-import': 'off',
       'n/no-extraneous-import': 'off',
+      'n/no-process-exit': 'off',
 
       // FIX: Relax strict types for Action development
       '@typescript-eslint/no-explicit-any': 'off',
