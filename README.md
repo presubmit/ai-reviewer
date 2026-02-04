@@ -1,3 +1,4 @@
+# Welcome
 <div align="center">
   <h1>
     Presubmit - AI Code Reviewer
@@ -153,7 +154,7 @@ Make sure to replace `https://github.example.com` with your actual GitHub Enterp
 
 - **In-depth Analysis**: Line-by-line review with context-aware suggestions
 - **Auto PR Summary**: Concise, meaningful summaries of changes
-- **Code Quality**: Catches bugs, anti-patterns, and style issues
+- **Code Quality**: Catches bugs, antipatterns, and style issues
 - **Interactive**: Responds to questions and clarifications in comments
 
 ### 🛡️ Security & Quality
@@ -189,7 +190,7 @@ Run the reviewer locally against real PRs using your GitHub authentication.
 
 - Node.js 18+
 - GitHub CLI authenticated: `gh auth login`
-- `.env` file at repo root with:
+- `.env` file at repository root with:
   - `LLM_API_KEY=...` (your API key)
   - `LLM_MODEL=...` (e.g., `claude-3-5-sonnet-20241022`, `gpt-4o-mini`)
   - Optional: `LLM_PROVIDER=ai-sdk` (default)

@@ -1,4 +1,7 @@
+<!-- textlint-disable -->
 <!-- prettier-ignore-start -->
+<!-- codespell:ignore -->
+<!-- markdownlint-disable MD024 -->
 
 ## [2.0.0](https://github.com/gccloudone-aurora-collab/ai-pr-reviewer/compare/v1.0.0...v2.0.0) (2026-02-03)
 
