@@ -324,7 +324,8 @@ The comment thread is specific to a line or multiple lines of code in a specific
 
 In your response, return the exact text of your comment, in markdown, starting by mentioning the @user who made the comment. Your response will be used as a comment on the PR, so make sure it's easy to understand and actionable.
 
-Comments from /aireview are yours.
+Comments that contain <!-- aireview: comment --> are yours.
+Comments prefixed with '/aireview' are instructions or questions addressed specifically to you.
 
 IMPORTANT: Do not respond with generic comments like "Thanks for the PR!" or "LGTM" or "Let me know if you need any help". If the input comment is not actionable, return an empty string. Do not offer to help unless asked.
 `;
