@@ -1,4 +1,8 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
+import js from '@eslint/js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import n from 'eslint-plugin-n';
 import prettier from 'eslint-plugin-prettier';
 import globals from 'globals';
@@ -6,9 +10,6 @@ import jsoncParser from 'jsonc-eslint-parser';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import pluginVue from 'eslint-plugin-vue';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,29 +21,21 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
+  // 1. Global Ignores
   globalIgnores([
     '!**/.*',
     '**/node_modules/.*',
-
-    // ignore build output anywhere
     '**/dist/**',
-
-    // ignore common CI workspace roots used by wrappers
     '/github/workspace/dist/**',
     '/tmp/lint/dist/**',
-
-    // extra: deps/coverage
     '**/node_modules/**',
     '**/coverage/**',
   ]),
+
+  // 2. Base Configuration (JS Recommended + Plugins + Globals)
   {
     extends: compat.extends('eslint:recommended'),
-
-    plugins: {
-      n,
-      prettier,
-    },
-
+    plugins: { n, prettier },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -51,83 +44,48 @@ export default defineConfig([
       },
     },
   },
-  {
-    files: ['**/*.json'],
-    extends: compat.extends('plugin:jsonc/recommended-with-json'),
 
-    languageOptions: {
-      parser: jsoncParser,
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-
-      parserOptions: {
-        jsonSyntax: 'JSON',
-      },
-    },
-  },
+  // 3. JSON / JSONC / JSON5 (Grouped for cleanliness)
   {
-    files: ['**/*.jsonc'],
+    files: ['**/*.json', '**/*.jsonc', '**/*.json5'],
     extends: compat.extends('plugin:jsonc/recommended-with-jsonc'),
-
     languageOptions: {
       parser: jsoncParser,
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-
-      parserOptions: {
-        jsonSyntax: 'JSONC',
-      },
     },
   },
-  {
-    files: ['**/*.json5'],
-    extends: compat.extends('plugin:jsonc/recommended-with-json5'),
 
-    languageOptions: {
-      parser: jsoncParser,
-      ecmaVersion: 'latest',
-      sourceType: 'script',
-
-      parserOptions: {
-        jsonSyntax: 'JSON5',
-      },
-    },
-  },
+  // 4. JavaScript & React
   {
     files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.jsx'],
     extends: compat.extends('plugin:react/recommended'),
-
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-          modules: true,
-        },
+        ecmaFeatures: { jsx: true, modules: true },
       },
     },
   },
+
+  // 5. TypeScript (The core of a GitHub Action)
   {
     files: ['**/*.ts', '**/*.cts', '**/*.mts', '**/*.tsx'],
-
     extends: compat.extends(
       'plugin:@typescript-eslint/recommended',
       'plugin:n/recommended',
       'plugin:react/recommended',
       'prettier',
     ),
-
     plugins: {
       '@typescript-eslint': typescriptEslint,
     },
-
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
     },
   },
+
+  // 6. Vue (Native Flat Config)
   ...pluginVue.configs['flat/recommended'],
 ]);
