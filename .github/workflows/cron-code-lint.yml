@@ -36,3 +36,4 @@ jobs:
           SUPPRESS_POSSUM: true
           LINTER_RULES_PATH: /
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
+          SPELL_CODESPELL_CONFIG_FILE: .codespellrc
