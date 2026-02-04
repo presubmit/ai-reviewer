@@ -36,7 +36,6 @@ jobs:
           SUPPRESS_POSSUM: true
           LINTER_RULES_PATH: /
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: false
-          SPELL_CODESPELL_CONFIG_FILE: .codespellrc
-          NATURAL_LANGUAGE_CONFIG_FILE: .textlintrc
+          IGNORE_GENERATED_FILES: true
           JAVASCRIPT_ES_FILE_NAME: eslint.config.mjs
           TYPESCRIPT_ES_CONFIG_FILE: eslint.config.mjs
