@@ -30,7 +30,6 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_CHECKOV: false
           VALIDATE_JSCPD: false
-          VALIDATE_PYTHON_PYINK: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
           VALIDATE_TRIVY: false
