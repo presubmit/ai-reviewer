@@ -5,7 +5,7 @@ export type ReviewComment = {
   path: string;
   body: string;
   diff_hunk?: string;
-  line?: number;
+  line?: number | null;
   in_reply_to_id?: number;
   id: number;
   start_line?: number | null;
@@ -64,9 +64,7 @@ export function isThreadRelevant(thread: ReviewCommentThread): boolean {
 }
 
 function generateCommentThreads(reviewComments: ReviewComment[]): ReviewCommentThread[] {
-  const topLevelComments = reviewComments.filter(
-    (c) => !c.in_reply_to_id && c.body.length && !!c.line,
-  );
+  const topLevelComments = reviewComments.filter((c) => !c.in_reply_to_id && c.body.length);
 
   return topLevelComments.map((topLevelComment) => {
     return {
