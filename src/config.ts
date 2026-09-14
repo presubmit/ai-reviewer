@@ -1,5 +1,5 @@
 import { getInput, getMultilineInput } from "@actions/core";
-import { AIProviderType } from "./ai";
+import { AIProviderType } from "./types";
 
 export class Config {
   public llmApiKey: string | undefined;

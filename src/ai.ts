@@ -3,13 +3,11 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
 import config from "./config";
+import { AIProviderType } from "./types";
 import { AISDKProvider } from "./providers/ai-sdk";
 import { SAPAIProvider } from "./providers/sapaicore";
 
-export enum AIProviderType {
-  AI_SDK = "ai-sdk",
-  SAP_AI_SDK = "sap-ai-sdk",
-}
+export { AIProviderType };
 
 /** Vendor config: createAi + list of model names (optional temperature). */
 type VendorModels = {
