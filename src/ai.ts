@@ -243,19 +243,29 @@ export async function runPrompt({
   }
   const providerType = config.llmProvider as AIProviderType;
   const providerModels = LLM_MODELS[providerType];
-  // Use prefix-based fallback for AI_SDK (covers claude-*, gpt-*, gemini-*, etc.)
-  // When using a custom base URL, skip whitelist validation and use OpenAI SDK directly
-  let modelConfig =
-    providerType === AIProviderType.AI_SDK
-      ? resolveAISDKModel(modelName)
-      : providerModels.find((m) => m.name === modelName);
 
-  if (!modelConfig && config.llmBaseUrl && providerType === AIProviderType.AI_SDK) {
+  let modelConfig: ModelConfig | null = null;
+
+  if (config.llmBaseUrl && providerType === AIProviderType.AI_SDK) {
+    if (config.llmBaseUrl.includes("openrouter.ai") && !modelName.includes("/")) {
+      console.warn(
+        `[warning] OpenRouter model names typically require a provider prefix (e.g. 'anthropic/${modelName}', 'openai/${modelName}'). Model '${modelName}' may fail if not found.`
+      );
+    }
+    // When using a custom base URL (e.g., OpenRouter or other OpenAI-compatible APIs),
+    // use the OpenAI provider directly and bypass the vendor whitelist.
     modelConfig = {
       name: modelName,
       createAi: createOpenAI,
     };
+  } else {
+    // Use prefix-based fallback for AI_SDK (covers claude-*, gpt-*, gemini-*, etc.)
+    modelConfig =
+      providerType === AIProviderType.AI_SDK
+        ? resolveAISDKModel(modelName)
+        : providerModels.find((m) => m.name === modelName);
   }
+
   if (!modelConfig) {
     throw new Error(
       `Unknown LLM model: ${modelName}. For provider ${

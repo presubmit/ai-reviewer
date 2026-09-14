@@ -107,21 +107,23 @@ The action requires:
 - `LLM_MODEL`: Which LLM model to use. Make sure the model is [supported](https://github.com/presubmit/ai-reviewer/blob/main/src/ai.ts) and matches the `LLM_API_KEY`.
 - `LLM_BASE_URL` (optional): Base URL for OpenAI-compatible providers when using `LLM_PROVIDER=ai-sdk` (e.g., `https://openrouter.ai/api/v1` for OpenRouter). Not applicable for `sap-ai-sdk` provider.
 
-### Using OpenAI-Compatible Providers
+### Using OpenAI-Compatible Providers (e.g. OpenRouter)
 
-To use OpenRouter or other OpenAI-compatible providers with the `ai-sdk` provider, add the `LLM_BASE_URL` environment variable:
+To use OpenRouter or other OpenAI-compatible providers with the `ai-sdk` provider, add the `LLM_BASE_URL` environment variable. When `LLM_BASE_URL` is set, requests are routed using the OpenAI-compatible API protocol.
+
+For OpenRouter, specify the full model name with its provider prefix (e.g., `anthropic/claude-sonnet-4.5`, `anthropic/claude-3.7-sonnet`, or `openai/gpt-4o-mini`):
 
 ```yaml
       - uses: presubmit/ai-reviewer@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: "openai/gpt-4o-mini"
+          LLM_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
           LLM_PROVIDER: "ai-sdk"
           LLM_BASE_URL: "https://openrouter.ai/api/v1"
+          LLM_MODEL: "anthropic/claude-sonnet-4.5"
 ```
 
-**Note**: This configuration only works with `LLM_PROVIDER=ai-sdk`. It supports any OpenAI-compatible API including OpenRouter, Anyscale, Together AI, and others. The `sap-ai-sdk` provider uses its own `SAP_AI_CORE_BASE_URL` configuration instead.
+**Note**: This configuration only works with `LLM_PROVIDER=ai-sdk`. It supports any OpenAI-compatible API including OpenRouter, Anyscale, Together AI, Ollama, LiteLLM, vLLM, and others. The `sap-ai-sdk` provider uses its own `SAP_AI_CORE_BASE_URL` configuration instead.
 
 ### GitHub Enterprise Server Support
 
