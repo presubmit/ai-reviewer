@@ -3,13 +3,11 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
 import config from "./config";
+import { AIProviderType } from "./types";
 import { AISDKProvider } from "./providers/ai-sdk";
 import { SAPAIProvider } from "./providers/sapaicore";
 
-export enum AIProviderType {
-  AI_SDK = "ai-sdk",
-  SAP_AI_SDK = "sap-ai-sdk",
-}
+export { AIProviderType };
 
 /** Vendor config: createAi + list of model names (optional temperature). */
 type VendorModels = {
@@ -217,6 +215,46 @@ type ModelConfig = {
   temperature?: number;
 };
 
+export const OPENROUTER_MODEL_MAP: Record<string, string> = {
+  // Claude 5.x series
+  "claude-fable-5-1": "anthropic/claude-fable-5.1",
+  "claude-opus-5": "anthropic/claude-opus-5",
+  "claude-sonnet-5": "anthropic/claude-sonnet-5",
+  "claude-haiku-4-5-20251001": "anthropic/claude-haiku-4.5",
+  "claude-haiku-4-5": "anthropic/claude-haiku-4.5",
+  // Claude 4.x series
+  "claude-sonnet-4-5": "anthropic/claude-sonnet-4.5",
+  "claude-sonnet-4-5-20250929": "anthropic/claude-sonnet-4.5",
+  "claude-opus-4-20250514": "anthropic/claude-opus-4",
+  "claude-opus-4-1-20250805": "anthropic/claude-opus-4.1",
+  "claude-sonnet-4-20250514": "anthropic/claude-sonnet-4",
+  // Claude 3.x series
+  "claude-3-7-sonnet-20250219": "anthropic/claude-3.7-sonnet",
+  "claude-3-5-sonnet-20241022": "anthropic/claude-3.5-sonnet",
+  "claude-3-5-sonnet-20240620": "anthropic/claude-3.5-sonnet",
+};
+
+export function resolveOpenRouterModel(modelName: string): string {
+  // If user already specified vendor prefix (e.g. anthropic/..., openai/..., google/...), keep it
+  if (modelName.includes("/")) {
+    return modelName;
+  }
+  if (OPENROUTER_MODEL_MAP[modelName]) {
+    return OPENROUTER_MODEL_MAP[modelName];
+  }
+  if (modelName.startsWith("claude-")) {
+    const withDotVersion = modelName.replace(/-(\d+)-(\d+)/, "-$1.$2");
+    return `anthropic/${withDotVersion}`;
+  }
+  if (modelName.startsWith("gpt-") || /^o\d+(-|\.|$)/.test(modelName)) {
+    return `openai/${modelName}`;
+  }
+  if (modelName.startsWith("gemini-")) {
+    return `google/${modelName}`;
+  }
+  return modelName;
+}
+
 export async function runPrompt({
   prompt,
   systemPrompt,
@@ -243,19 +281,50 @@ export async function runPrompt({
   }
   const providerType = config.llmProvider as AIProviderType;
   const providerModels = LLM_MODELS[providerType];
-  // Use prefix-based fallback for AI_SDK (covers claude-*, gpt-*, gemini-*, etc.)
-  // When using a custom base URL, skip whitelist validation and use OpenAI SDK directly
-  let modelConfig =
-    providerType === AIProviderType.AI_SDK
-      ? resolveAISDKModel(modelName)
-      : providerModels.find((m) => m.name === modelName);
 
-  if (!modelConfig && config.llmBaseUrl && providerType === AIProviderType.AI_SDK) {
-    modelConfig = {
-      name: modelName,
-      createAi: createOpenAI,
-    };
+  let modelConfig: ModelConfig | null = null;
+
+  if (config.llmBaseUrl && providerType === AIProviderType.AI_SDK) {
+    const isAnthropicGateway = config.llmBaseUrl.includes("anthropic");
+    const isGoogleGateway =
+      config.llmBaseUrl.includes("google") ||
+      config.llmBaseUrl.includes("generativelanguage");
+    const isOpenRouter = config.llmBaseUrl.includes("openrouter.ai");
+
+    if (isOpenRouter) {
+      const resolvedName = resolveOpenRouterModel(modelName);
+      if (resolvedName !== modelName) {
+        console.log(`[OpenRouter] Mapped model '${modelName}' -> '${resolvedName}'`);
+      }
+      modelConfig = {
+        name: resolvedName,
+        createAi: createOpenAI,
+      };
+    } else if (isAnthropicGateway) {
+      modelConfig = {
+        name: modelName,
+        createAi: createAnthropic,
+      };
+    } else if (isGoogleGateway) {
+      modelConfig = {
+        name: modelName,
+        createAi: createGoogleGenerativeAI,
+      };
+    } else {
+      // General OpenAI-compatible API (Ollama, vLLM, LiteLLM, Together, etc.)
+      modelConfig = {
+        name: modelName,
+        createAi: createOpenAI,
+      };
+    }
+  } else {
+    // Use prefix-based fallback for AI_SDK (covers claude-*, gpt-*, gemini-*, etc.)
+    modelConfig =
+      providerType === AIProviderType.AI_SDK
+        ? resolveAISDKModel(modelName)
+        : providerModels.find((m) => m.name === modelName);
   }
+
   if (!modelConfig) {
     throw new Error(
       `Unknown LLM model: ${modelName}. For provider ${
