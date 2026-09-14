@@ -97,7 +97,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: "claude-sonnet-4-5"
+          LLM_MODEL: "claude-sonnet-5"
 ```
 
 The action requires:
@@ -191,7 +191,7 @@ Run the reviewer locally against real PRs using your GitHub authentication.
 - GitHub CLI authenticated: `gh auth login`
 - `.env` file at repo root with:
   - `LLM_API_KEY=...` (your API key)
-  - `LLM_MODEL=...` (e.g., `claude-3-5-sonnet-20241022`, `gpt-4o-mini`)
+  - `LLM_MODEL=...` (e.g., `claude-sonnet-5`, `gemini-3.7-flash`, `gpt-5.6-sol`)
   - Optional: `LLM_PROVIDER=ai-sdk` (default)
   - Optional: `LLM_BASE_URL=...` (for OpenAI-compatible providers like OpenRouter)
 

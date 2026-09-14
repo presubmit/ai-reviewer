@@ -22,55 +22,70 @@ const AI_SDK_VENDORS: VendorModels[] = [
   {
     createAi: createAnthropic,
     models: [
-      { name: "claude-3-5-sonnet-20240620" },
-      { name: "claude-3-5-sonnet-20241022" },
-      { name: "claude-3-7-sonnet-20250219" },
-      { name: "claude-sonnet-4-20250514" },
+      // Claude 5.x series (current)
+      { name: "claude-fable-5-1" },
+      { name: "claude-opus-5" },
+      { name: "claude-sonnet-5" },
+      { name: "claude-haiku-4-5-20251001" },
+      { name: "claude-haiku-4-5" },
+      // Claude 4.x series
+      { name: "claude-sonnet-4-5" },
+      { name: "claude-sonnet-4-5-20250929" },
       { name: "claude-opus-4-20250514" },
       { name: "claude-opus-4-1-20250805" },
-      { name: "claude-sonnet-4-5-20250929" },
-      { name: "claude-sonnet-4-5" },
+      { name: "claude-sonnet-4-20250514" },
+      // Claude 3.x series (legacy)
+      { name: "claude-3-7-sonnet-20250219" },
+      { name: "claude-3-5-sonnet-20241022" },
+      { name: "claude-3-5-sonnet-20240620" },
     ],
   },
   {
     createAi: createOpenAI,
     models: [
+      // GPT-6 series (current)
+      { name: "gpt-6-astra", temperature: 1 },
+      // GPT-5.6 series
+      { name: "gpt-5.6-sol", temperature: 1 },
+      { name: "gpt-5.6-terra", temperature: 1 },
+      { name: "gpt-5.6-luna", temperature: 1 },
+      // GPT-5 series
       { name: "gpt-5", temperature: 1 },
       { name: "gpt-5-mini", temperature: 1 },
       { name: "gpt-5-nano", temperature: 1 },
+      // GPT-4.x series (legacy)
+      { name: "gpt-4.1" },
       { name: "gpt-4.1-mini" },
       { name: "gpt-4o-mini" },
+      // o-series reasoning models
+      { name: "o4-mini", temperature: 1 },
+      { name: "o3-mini", temperature: 1 },
+      { name: "o3" },
       { name: "o1" },
       { name: "o1-mini" },
-      { name: "o3-mini", temperature: 1 },
-      { name: "o4-mini", temperature: 1 },
-      { name: "gpt-4.1" },
     ],
   },
   {
     createAi: createGoogleGenerativeAI,
     models: [
-      // Stable: https://ai.google.dev/gemini-api/docs/models/gemini
-      { name: "gemini-2.0-flash-001" },
-      { name: "gemini-2.0-flash-lite-preview-02-05" },
-      { name: "gemini-1.5-flash" },
-      { name: "gemini-1.5-flash-latest" },
-      { name: "gemini-1.5-flash-8b" },
-      { name: "gemini-1.5-pro" },
-      { name: "gemini-2.5-pro" },
-      { name: "gemini-2.5-flash" },
-      // Gemini 3 and future 3.x (explicit; any gemini-* ID also works via fallback)
-      { name: "gemini-3.0-pro" },
-      { name: "gemini-3.0-flash" },
+      // Gemini 3.x series (current): https://ai.google.dev/gemini-api/docs/models
+      { name: "gemini-3.8-flash" },
+      { name: "gemini-3.7-flash" },
+      { name: "gemini-3.6-flash" },
+      { name: "gemini-3.5-flash" },
+      { name: "gemini-3.5-flash-lite" },
+      { name: "gemini-3.1-pro" },
+      { name: "gemini-3.1-flash" },
+      // Gemini 3.x preview aliases (kept for forward compat)
       { name: "gemini-3-pro" },
       { name: "gemini-3-flash" },
-      // Experimental: https://ai.google.dev/gemini-api/docs/models/experimental-models
-      { name: "gemini-2.5-pro-preview-05-06" },
-      { name: "gemini-2.5-flash-preview-04-17" },
-      { name: "gemini-2.0-pro-exp-02-05" },
-      { name: "gemini-2.0-flash-thinking-exp-01-21" },
-      { name: "gemini-2.5-flash-preview-05-20" },
-      { name: "gemini-2.5-flash-lite-preview-06-17" },
+      // Gemini 2.5 series (still active, retiring Oct 2026)
+      { name: "gemini-2.5-pro" },
+      { name: "gemini-2.5-flash" },
+      { name: "gemini-2.5-flash-lite" },
+      // Gemini 2.0 (legacy)
+      { name: "gemini-2.0-flash" },
+      { name: "gemini-2.0-flash-lite" },
     ],
   },
 ];
@@ -116,23 +131,38 @@ function resolveAISDKModel(modelName: string): ModelConfig | null {
 }
 
 const SAP_AI_SDK_MODELS: string[] = [
+  // Claude 5.x series
+  "anthropic--claude-sonnet-5",
+  "anthropic--claude-opus-5",
+  "anthropic--claude-haiku-4-5",
+  // Claude 4.x series
+  "anthropic--claude-sonnet-4-5",
+  // Claude 3.x series (legacy)
   "anthropic--claude-3.7-sonnet",
   "anthropic--claude-3.5-sonnet",
   "anthropic--claude-3-sonnet",
   "anthropic--claude-3-haiku",
   "anthropic--claude-3-opus",
-  "gpt-4o",
-  "gpt-4",
-  "gpt-4o-mini",
-  "o1",
-  "gpt-4.1",
-  "gpt-4.1-nano",
+  // OpenAI GPT-6 / 5.6 series
+  "gpt-6-astra",
+  "gpt-5.6-sol",
+  "gpt-5.6-terra",
+  "gpt-5.6-luna",
+  // OpenAI GPT-5 series
   "gpt-5",
   "gpt-5-mini",
   "gpt-5-nano",
-  "o3-mini",
-  "o3",
+  // OpenAI legacy
+  "gpt-4.1",
+  "gpt-4.1-nano",
+  "gpt-4o",
+  "gpt-4o-mini",
+  "gpt-4",
+  // o-series reasoning models
   "o4-mini",
+  "o3",
+  "o3-mini",
+  "o1",
 ];
 
 function getProviderModels(provider: AIProviderType): ModelConfig[] {
