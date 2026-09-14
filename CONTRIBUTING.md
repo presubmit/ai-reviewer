@@ -40,8 +40,8 @@ Thank you for your interest in contributing to Presubmit AI Reviewer!
 2. Configure your environment variables in `.env`:
 
    ```env
-   # Required: Choose your AI provider
-   AI_PROVIDER=anthropic # or openai
+   # Optional: Choose your AI provider (default: ai-sdk, or sap-ai-sdk)
+   LLM_PROVIDER=ai-sdk
 
    # Required: Set your API key and model based on the chosen provider
    LLM_API_KEY=...
