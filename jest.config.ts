@@ -8,7 +8,11 @@ const config: Config = {
   moduleNameMapper: {
     '^@octokit/action$': '<rootDir>/src/__mocks__/@octokit/action.ts',
     '^@octokit/plugin-retry$': '<rootDir>/src/__mocks__/@octokit/plugin-retry.ts',
-    '^@octokit/plugin-throttling$': '<rootDir>/src/__mocks__/@octokit/plugin-throttling.ts'
+    '^@octokit/plugin-throttling$': '<rootDir>/src/__mocks__/@octokit/plugin-throttling.ts',
+    '^@ai-sdk/anthropic$': '<rootDir>/src/__mocks__/@ai-sdk/anthropic.ts',
+    '^@ai-sdk/google$': '<rootDir>/src/__mocks__/@ai-sdk/google.ts',
+    '^@ai-sdk/openai$': '<rootDir>/src/__mocks__/@ai-sdk/openai.ts',
+    '^ai$': '<rootDir>/src/__mocks__/ai.ts',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
@@ -16,7 +20,7 @@ const config: Config = {
     }]
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(@octokit)/)'
+    'node_modules/(?!(@octokit|@ai-sdk/anthropic|@ai-sdk/google|@ai-sdk/openai|@ai-sdk/provider|@ai-sdk/provider-utils|@ai-sdk/ui-utils|ai)/)'
   ],
   collectCoverageFrom: [
     'src/**/*.ts',
